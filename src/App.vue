@@ -10,7 +10,7 @@
           Mashed_potatoes
         </q-toolbar-title>
         <q-tabs v-model="menu" inline-label class="bg-secondary">
-          <q-route-tab name="chat" icon="chat" label="聊天" to="/chat">
+          <q-route-tab name="chat" icon="chat" label="聊天" to="/mashed_potatoes_ui/chat">
             <q-badge floating rounded color="red">2</q-badge>
           </q-route-tab>
           <q-tab name="folder" icon="folder" label="文件"/>

@@ -5,17 +5,17 @@ const router = createRouter({
     history: routerHistory,
     routes: [
         {
-            path: '/',
-            redirect: '/chat',
+            path: '/mashed_potatoes_ui/',
+            redirect: '/mashed_potatoes_ui/chat',
         },
         {
-            path: '/index',
+            path: '/mashed_potatoes_ui/index',
             component: () => import('@/views/chat.vue')
         },
         {
-            path: '/chat',
+            path: '/mashed_potatoes_ui/chat',
             component: () => import('@/views/chat.vue'),
-            redirect: '/chat/message',
+            redirect: '/mashed_potatoes_ui/chat/message',
             children: [
                 {
                     path: 'message',
