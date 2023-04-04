@@ -14,11 +14,18 @@ const router = createRouter({
         },
         {
             path: '/chat',
-            component: () => import('@/views/chat.vue')
-        },
-        {
-            path: '/friend',
-            component: () => import('@/views/friend.vue')
+            component: () => import('@/views/chat.vue'),
+            redirect: '/chat/message',
+            children: [
+                {
+                    path: 'message',
+                    component: () => import('@/views/chat/message.vue')
+                },
+                {
+                    path: 'friend',
+                    component: () => import('@/views/chat/friend.vue')
+                }
+            ]
         }
     ]
 })

@@ -13,7 +13,7 @@
           <q-route-tab name="chat" icon="chat" label="聊天" to="/chat">
             <q-badge floating rounded color="red">2</q-badge>
           </q-route-tab>
-          <q-route-tab name="folder" icon="folder" label="文件" to="/friend"/>
+          <q-tab name="folder" icon="folder" label="文件"/>
           <q-tab name="notice" icon="notifications_active" label="通知">
             <q-badge floating rounded color="red">2</q-badge>
           </q-tab>
