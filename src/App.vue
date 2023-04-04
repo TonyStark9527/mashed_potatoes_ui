@@ -26,7 +26,7 @@
             <q-list>
               <q-item clickable v-close-popup>
                 <q-item-section avatar>
-                  <q-avatar icon="logout" color="secondary" text-color="white" />
+                  <q-avatar icon="logout" color="secondary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>登出</q-item-label>
@@ -34,7 +34,7 @@
               </q-item>
               <q-item clickable v-close-popup>
                 <q-item-section avatar>
-                  <q-avatar icon="logout" color="secondary" text-color="white" />
+                  <q-avatar icon="logout" color="secondary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>登出</q-item-label>
@@ -58,11 +58,19 @@
 import {useQuasar} from 'quasar'
 import {ref, watch} from 'vue'
 import MessageTip from './utils/messageTip'
+import {useRoute, useRouter} from "vue-router";
 
 // 主题样式
 const theme = ref(true)
 
 const $q = useQuasar()
+
+const route = useRoute()
+
+const router = useRouter()
+
+console.log(route)
+console.log(router)
 
 const menu = ref('chat')
 
