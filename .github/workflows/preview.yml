@@ -4,10 +4,10 @@ on:
       - master
 jobs:
   preview:
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with: 
           persist-credentials: false
           
