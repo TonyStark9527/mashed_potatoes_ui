@@ -26,6 +26,10 @@ const router = createRouter({
                     component: () => import('@/views/chat/friend.vue')
                 }
             ]
+        },
+        {
+            path: '/mashed_potatoes/folder',
+            component: () => import('@/views/folder.vue')
         }
     ]
 })
