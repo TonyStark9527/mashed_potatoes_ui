@@ -58,7 +58,8 @@
 import {useQuasar} from 'quasar'
 import {ref, watch} from 'vue'
 import MessageTip from './utils/messageTip'
-import {useRoute, useRouter} from "vue-router";
+import {useRoute, useRouter} from 'vue-router'
+import api from './api/axios'
 
 // 主题样式
 const theme = ref(true)
@@ -77,6 +78,10 @@ const menu = ref('chat')
 watch(theme, (newShow, oldShow) => {
   $q.dark.set(!newShow)
   MessageTip.success('更换主题成功！')
+})
+
+api.post('/user/login', {username: 'wwk', password: '123456'}).then(res => {
+  // todo 处理返回参数
 })
 
 </script>

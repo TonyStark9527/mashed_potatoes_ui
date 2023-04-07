@@ -20,7 +20,7 @@
 
       <q-item clickable v-ripple :active="menu === 'setting'" class="text-secondary" @click="menu='setting'">
         <q-item-section avatar>
-          <q-btn round icon="question_answer" :class="menu === 'setting'? 'bg-secondary text-white':''">
+          <q-btn round icon="o_notifications_active" :class="menu === 'setting'? 'bg-secondary text-white':''">
             <q-badge floating rounded color="red">2</q-badge>
           </q-btn>
         </q-item-section>
