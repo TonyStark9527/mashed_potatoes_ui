@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf">
 
-    <q-header reveal elevated class="bg-secondary text-white q-py-sm">
+    <q-header reveal elevated class="bg-secondary text-white z-top q-py-sm">
       <q-toolbar>
         <q-btn flat round dense icon="assignment_ind">
           <q-badge floating color="red">2</q-badge>
@@ -10,6 +10,7 @@
           Mashed_potatoes
         </q-toolbar-title>
         <q-tabs v-model="menu" inline-label class="bg-secondary">
+          <q-route-tab name="home" icon="home" label="首 页" to="/mashed_potatoes_ui/index" />
           <q-route-tab name="chat" icon="chat" label="聊 天" to="/mashed_potatoes_ui/chat">
             <q-badge floating rounded color="red">2</q-badge>
           </q-route-tab>
@@ -48,7 +49,7 @@
                   keep-color/>
       </q-toolbar>
     </q-header>
-    <q-page-container>
+    <q-page-container class="fullscreen">
       <router-view/>
     </q-page-container>
   </q-layout>
@@ -112,7 +113,7 @@ function loginIn() {
   }, 2000)
 }
 
-const menu = ref('chat')
+const menu = ref('home')
 
 watch(theme, (newShow, oldShow) => {
   $q.dark.set(!newShow)

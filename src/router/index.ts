@@ -6,11 +6,11 @@ const router = createRouter({
     routes: [
         {
             path: '/mashed_potatoes_ui/',
-            redirect: '/mashed_potatoes_ui/chat',
+            redirect: '/mashed_potatoes_ui/index',
         },
         {
             path: '/mashed_potatoes_ui/index',
-            component: () => import('@/views/chat.vue')
+            component: () => import('@/views/home.vue')
         },
         {
             path: '/mashed_potatoes_ui/chat',
