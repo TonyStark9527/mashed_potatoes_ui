@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf">
 
-    <q-header reveal elevated class="bg-secondary text-white z-top q-py-sm">
+    <q-header reveal elevated class="bg-secondary text-white q-py-sm">
       <q-toolbar>
         <q-btn flat round dense icon="assignment_ind">
           <q-badge floating color="red">2</q-badge>
@@ -49,7 +49,7 @@
                   keep-color/>
       </q-toolbar>
     </q-header>
-    <q-page-container class="fullscreen">
+    <q-page-container class="fullscreen z-inherit">
       <router-view/>
     </q-page-container>
   </q-layout>

@@ -1,5 +1,5 @@
 <template>
-  <q-drawer show-if-above side="left" elevated mini>
+  <q-drawer show-if-above side="left" behavior="desktop" elevated mini>
     <q-list class="fixed-center full-width">
       <q-item clickable v-ripple :active="menu === 'message'" class="text-secondary" @click="menu='message'"
               to="/mashed_potatoes_ui/chat/message">
