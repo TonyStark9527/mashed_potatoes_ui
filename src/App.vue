@@ -89,28 +89,27 @@ const $q = useQuasar()
 const login = ref({
   loginPanel: false, // 是否弹出登录面板
   loginLoading: false, // 调用登录接口时，登录按钮的loading状态
-  username: 'wwk', // 用户名
+  username: 'tom', // 用户名
   password: '123456', // 用户密码
   isLogin: false // 用户菜单显示控制，true为登录菜单，false为未登录菜单
 })
 
 function loginIn() {
   login.value.loginLoading = true
-  // api.post('/user/login', {username: login.value.username, password: login.value.password}).then(res => {
-  //   // todo 处理返回参数
-  // })
   // todo 实现用户登录接口的调用，以及用户token的存储与使用
-  // 这里是模拟用户登录接口调用耗时2秒
-  window.setTimeout(() => {
-    // 关闭登录按钮loading状态
-    login.value.loginLoading = false
-    // 关闭登录弹框
-    login.value.loginPanel = false
-    // 用户菜单切换为已登录菜单
-    login.value.isLogin = true
-    // 提示用户登录成功
-    MessageTip.success('登录成功！')
-  }, 2000)
+  api.post('/v1/user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
+    // todo 处理返回参数
+    if (res.data.code === "00000") {
+      // 关闭登录按钮loading状态
+      login.value.loginLoading = false
+      // 关闭登录弹框
+      login.value.loginPanel = false
+      // 用户菜单切换为已登录菜单
+      login.value.isLogin = true
+      // 提示用户登录成功
+      MessageTip.success('登录成功！')
+    }
+  })
 }
 
 const menu = ref('home')

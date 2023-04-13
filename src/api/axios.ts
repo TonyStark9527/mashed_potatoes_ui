@@ -2,7 +2,7 @@ import axios from 'axios'
 import messageTip from "@/utils/messageTip";
 
 const api = axios.create({
-    baseURL: 'http://1.13.23.227:19527',
+    baseURL: 'http://127.0.0.1:9527',
     timeout: 10000
 })
 
@@ -23,6 +23,9 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
     response => {
+        if (response.data.code !== "00000") {
+            console.log(response.data.message)
+        }
         return response
     },
     error => {
