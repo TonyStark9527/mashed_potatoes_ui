@@ -96,7 +96,7 @@ const login = ref({
 
 function loginIn() {
   login.value.loginLoading = true
-  // todo 实现用户登录接口的调用，以及用户token的存储与使用
+  // todo 用户token的存储与使用
   api.post('/v1/user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
     // todo 处理返回参数
     if (res.data.code === "00000") {
@@ -108,13 +108,18 @@ function loginIn() {
       login.value.isLogin = true
       // 提示用户登录成功
       MessageTip.success('登录成功！')
+    } else {
+      // 关闭登录按钮loading状态
+      login.value.loginLoading = false
+      // 提示用户登录失败
+      MessageTip.success(res.data.message)
     }
   })
 }
 
 const menu = ref('home')
 
-watch(theme, (newShow, oldShow) => {
+watch(theme, (newShow) => {
   $q.dark.set(!newShow)
   MessageTip.success('更换主题成功！')
 })

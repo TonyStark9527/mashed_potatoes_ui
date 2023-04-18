@@ -2,7 +2,7 @@ import axios from 'axios'
 import messageTip from "@/utils/messageTip";
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:9527',
+    baseURL: 'http://127.0.0.1:1010',
     timeout: 10000
 })
 
