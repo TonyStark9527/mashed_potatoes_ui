@@ -10,7 +10,7 @@
           Mashed_potatoes
         </q-toolbar-title>
         <q-tabs v-model="menu" inline-label class="bg-secondary">
-          <q-route-tab name="home" icon="home" label="首 页" to="/mashed_potatoes_ui/index" />
+          <q-route-tab name="home" icon="home" label="首 页" to="/mashed_potatoes_ui/index"/>
           <q-route-tab name="chat" icon="chat" label="聊 天" to="/mashed_potatoes_ui/chat">
             <q-badge floating rounded color="red">2</q-badge>
           </q-route-tab>
@@ -18,7 +18,8 @@
           <q-tab name="notice" icon="notifications_active" label="通 知">
             <q-badge floating rounded color="red">2</q-badge>
           </q-tab>
-          <q-btn v-if="!login.isLogin" class="no-shadow" color="secondary" icon="person" label="登 录" stretch unelevated @click="login.loginPanel = true"/>
+          <q-btn v-if="!login.isLogin" class="no-shadow" color="secondary" icon="person" label="登 录" stretch unelevated
+                 @click="login.loginPanel = true"/>
           <q-btn-dropdown v-if="login.isLogin" auto-close stretch flat>
             <template v-slot:label>
               <q-avatar>
@@ -67,8 +68,8 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn unelevated color="secondary" label="取 消" v-close-popup />
-        <q-btn unelevated color="secondary" label="登 录" :loading="login.loginLoading" @click="loginIn" />
+        <q-btn unelevated color="secondary" label="取 消" v-close-popup/>
+        <q-btn unelevated color="secondary" label="登 录" :loading="login.loginLoading" @click="loginIn"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -80,9 +81,12 @@ import {useQuasar} from 'quasar'
 import {ref, watch} from 'vue'
 import MessageTip from './utils/messageTip'
 import api from './api/axios'
+import {userStore} from "@/store/userStore"
 
 // 主题样式
 const theme = ref(true)
+
+const user = userStore()
 
 const $q = useQuasar()
 
@@ -107,6 +111,7 @@ function loginIn() {
       // 用户菜单切换为已登录菜单
       login.value.isLogin = true
       // 提示用户登录成功
+      user.setInfo(login.value.username, '', res.data.result)
       MessageTip.success('登录成功！')
     } else {
       // 关闭登录按钮loading状态

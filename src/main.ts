@@ -10,6 +10,8 @@ import '@quasar/extras/material-icons-sharp/material-icons-sharp.css'
 import 'quasar/src/css/index.sass'
 // Import Router
 import router from '@/router/index'
+// Import Pinia
+import store from '@/store'
 import App from './App.vue'
 
 const app = createApp(App)
@@ -19,6 +21,6 @@ app.use(Quasar, {
     lang: quasarLang,
 })
 
-app.use(router)
+app.use(router).use(store)
 
 app.mount('#app')

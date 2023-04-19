@@ -1,5 +1,6 @@
 import axios from 'axios'
-import messageTip from "@/utils/messageTip";
+import messageTip from "@/utils/messageTip"
+import {userStore} from "@/store/userStore"
 
 const api = axios.create({
     baseURL: 'http://127.0.0.1:1010',
@@ -11,8 +12,12 @@ api.interceptors.request.use(
         let apiToken = api.defaults.headers.token
         if (!apiToken) {
             // todo 设置token
-            config.headers!.token = 'token'
-            api.defaults.headers.token = 'token'
+            const user = userStore()
+            let token = user.getToken()
+            if (token) {
+                config.headers!.token = 'token'
+                api.defaults.headers.token = 'token'
+            }
         }
         return config
     },
