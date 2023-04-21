@@ -103,21 +103,30 @@ function loginIn() {
   // todo 用户token的存储与使用
   api.post('/v1/user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
     // todo 处理返回参数
-    if (res.data.code === "00000") {
+    if (res.data.code === '00000' && res.data.result) {
+      // 设置用户token，请求用户信息
+      user.setToken(res.data.result)
+      api.get('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
+        if (userInfo.data.code === '00000' && userInfo.data.result) {
+          // 设置全局用户信息
+          user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, res.data.result)
+          // 关闭登录按钮loading状态
+          login.value.loginLoading = false
+          // 关闭登录弹框
+          login.value.loginPanel = false
+          // 用户菜单切换为已登录菜单
+          login.value.isLogin = true
+          // 提示用户登录成功
+          MessageTip.success('登录成功！')
+        }
+      })
+    } else {
       // 关闭登录按钮loading状态
       login.value.loginLoading = false
       // 关闭登录弹框
       login.value.loginPanel = false
-      // 用户菜单切换为已登录菜单
-      login.value.isLogin = true
-      // 提示用户登录成功
-      user.setInfo(login.value.username, '', res.data.result)
-      MessageTip.success('登录成功！')
-    } else {
-      // 关闭登录按钮loading状态
-      login.value.loginLoading = false
       // 提示用户登录失败
-      MessageTip.success(res.data.message)
+      MessageTip.error(res.data.message)
     }
   })
 }

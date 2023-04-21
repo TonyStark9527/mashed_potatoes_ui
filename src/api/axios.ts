@@ -14,8 +14,8 @@ api.interceptors.request.use(
             const user = userStore()
             let token = user.getToken()
             if (token) {
-                config.headers!.token = 'token'
-                api.defaults.headers.token = 'token'
+                config.headers!.token = token
+                api.defaults.headers.token = token
             }
         }
         return config

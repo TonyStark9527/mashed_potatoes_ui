@@ -12,6 +12,9 @@ export const userStore = defineStore('user', {
             this.nickname = nickname
             this.token = token
         },
+        setToken(token: string) {
+            this.token = token
+        },
         getToken(): string {
             return this.token
         }

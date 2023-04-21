@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import {quasar, transformAssetUrls} from "@quasar/vite-plugin"
 import {resolve} from 'path'
 
+// 去除build之后的文件名含有特殊字符
 const INVALID_CHAR_REGEX = /[\u0000-\u001F"#$&*+,:;<=>?[\]^`{|}\u007F]/g
 const DRIVE_LETTER_REGEX = /^[a-z]:/i
 
