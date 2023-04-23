@@ -18,6 +18,7 @@
           <q-tab name="notice" icon="notifications_active" label="通 知">
             <q-badge floating rounded color="red">2</q-badge>
           </q-tab>
+          <!--用户未登录与用户登录时区别-->
           <q-btn v-if="!login.isLogin" class="no-shadow" color="secondary" icon="person" label="登 录" stretch unelevated
                  @click="login.loginPanel = true"/>
           <q-btn-dropdown v-if="login.isLogin" auto-close stretch flat>
@@ -82,6 +83,7 @@ import {ref, watch} from 'vue'
 import MessageTip from './utils/messageTip'
 import api from './api/axios'
 import {userStore} from "@/store/userStore"
+import messageTip from "./utils/messageTip";
 
 // 主题样式
 const theme = ref(true)
@@ -93,12 +95,22 @@ const $q = useQuasar()
 const login = ref({
   loginPanel: false, // 是否弹出登录面板
   loginLoading: false, // 调用登录接口时，登录按钮的loading状态
-  username: 'tom', // 用户名
-  password: '123456', // 用户密码
+  username: '', // 用户名
+  password: '', // 用户密码
   isLogin: false // 用户菜单显示控制，true为登录菜单，false为未登录菜单
 })
 
 function loginIn() {
+  if (!login.value.username || !login.value.password) {
+    messageTip.warn('请填写用户名和密码！')
+    $q.notify({
+      color: 'red-5',
+      textColor: 'white',
+      icon: 'warning',
+      message: '请输入用户名和密码！'
+    })
+    return
+  }
   login.value.loginLoading = true
   // todo 用户token的存储与使用
   api.post('/v1/user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
@@ -109,7 +121,7 @@ function loginIn() {
       api.get('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
         if (userInfo.data.code === '00000' && userInfo.data.result) {
           // 设置全局用户信息
-          user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, res.data.result)
+          user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname)
           // 关闭登录按钮loading状态
           login.value.loginLoading = false
           // 关闭登录弹框

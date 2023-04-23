@@ -4,6 +4,7 @@ import {userStore} from "@/store/userStore"
 
 const api = axios.create({
     baseURL: 'http://1.13.23.227:2957',
+    // baseURL: 'http://127.0.0.1:2957',
     timeout: 10000
 })
 
@@ -33,6 +34,12 @@ api.interceptors.response.use(
         return response
     },
     error => {
+        if (error.request.responseURL.endsWith('/user/login') && error.response.status === 403) {
+            error.data = {
+                code: 'A0001',
+                message: '密码错误！'
+            }
+        }
         return error
     }
 )

@@ -7,10 +7,9 @@ export const userStore = defineStore('user', {
         token: ''
     }),
     actions: {
-        setInfo(username: string, nickname: string, token: string) {
+        setInfo(username: string, nickname: string) {
             this.username = username
             this.nickname = nickname
-            this.token = token
         },
         setToken(token: string) {
             this.token = token
