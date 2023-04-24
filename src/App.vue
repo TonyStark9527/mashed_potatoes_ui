@@ -80,10 +80,9 @@
 
 import {useQuasar} from 'quasar'
 import {ref, watch} from 'vue'
-import MessageTip from './utils/messageTip'
 import api from './api/axios'
 import {userStore} from "@/store/userStore"
-import messageTip from "./utils/messageTip";
+import notify from "@/utils/notify"
 
 // 主题样式
 const theme = ref(true)
@@ -102,13 +101,7 @@ const login = ref({
 
 function loginIn() {
   if (!login.value.username || !login.value.password) {
-    messageTip.warn('请填写用户名和密码！')
-    $q.notify({
-      color: 'red-5',
-      textColor: 'white',
-      icon: 'warning',
-      message: '请输入用户名和密码！'
-    })
+    notify.warn('请输入用户名和密码！')
     return
   }
   login.value.loginLoading = true
@@ -129,7 +122,7 @@ function loginIn() {
           // 用户菜单切换为已登录菜单
           login.value.isLogin = true
           // 提示用户登录成功
-          MessageTip.success('登录成功！')
+          notify.success('登录成功！')
         }
       })
     } else {
@@ -138,7 +131,7 @@ function loginIn() {
       // 关闭登录弹框
       login.value.loginPanel = false
       // 提示用户登录失败
-      MessageTip.error(res.data.message)
+      notify.error(res.data.message)
     }
   })
 }
@@ -147,7 +140,7 @@ const menu = ref('home')
 
 watch(theme, (newShow) => {
   $q.dark.set(!newShow)
-  MessageTip.success('更换主题成功！')
+  notify.success('更换主题成功！')
 })
 
 </script>
