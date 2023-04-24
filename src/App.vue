@@ -64,7 +64,15 @@
       <q-card-section class="q-pt-none">
         <q-form class="q-gutter-md">
           <q-input standout="bg-teal text-white" label="用户名" v-model="login.username"/>
-          <q-input standout="bg-teal text-white" label="密码" v-model="login.password"/>
+          <q-input standout="bg-teal text-white" :type="login.hidePassword ? 'password' : 'text'" label="密码" v-model="login.password">
+            <template v-slot:append>
+              <q-icon
+                  :name="login.hidePassword ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="login.hidePassword = !login.hidePassword"
+              />
+            </template>
+          </q-input>
         </q-form>
       </q-card-section>
 
@@ -94,6 +102,7 @@ const $q = useQuasar()
 const login = ref({
   loginPanel: false, // 是否弹出登录面板
   loginLoading: false, // 调用登录接口时，登录按钮的loading状态
+  hidePassword: true,
   username: '', // 用户名
   password: '', // 用户密码
   isLogin: false // 用户菜单显示控制，true为登录菜单，false为未登录菜单
@@ -128,8 +137,6 @@ function loginIn() {
     } else {
       // 关闭登录按钮loading状态
       login.value.loginLoading = false
-      // 关闭登录弹框
-      login.value.loginPanel = false
       // 提示用户登录失败
       notify.error(res.data.message)
     }
