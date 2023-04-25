@@ -64,7 +64,8 @@
       <q-card-section class="q-pt-none">
         <q-form class="q-gutter-md">
           <q-input standout="bg-teal text-white" label="用户名" v-model="login.username"/>
-          <q-input standout="bg-teal text-white" :type="login.hidePassword ? 'password' : 'text'" label="密码" v-model="login.password">
+          <q-input standout="bg-teal text-white" :type="login.hidePassword ? 'password' : 'text'" label="密码"
+                   v-model="login.password">
             <template v-slot:append>
               <q-icon
                   :name="login.hidePassword ? 'visibility_off' : 'visibility'"

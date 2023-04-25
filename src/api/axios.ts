@@ -1,5 +1,4 @@
 import axios from 'axios'
-import messageTip from "@/utils/messageTip"
 import {userStore} from "@/store/userStore"
 
 const api = axios.create({

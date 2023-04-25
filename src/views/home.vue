@@ -4,7 +4,7 @@
       vertical
       transition-prev="slide-down"
       transition-next="slide-up"
-      transition-duration="4000"
+      transition-duration="3000"
       swipeable
       animated
       navigation
