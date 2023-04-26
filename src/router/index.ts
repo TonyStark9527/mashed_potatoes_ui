@@ -1,4 +1,6 @@
 import {createRouter,createWebHistory} from "vue-router"
+import {userStore} from "@/store/userStore"
+import notify from "@/utils/notify"
 
 const routerHistory = createWebHistory()
 const router = createRouter({
@@ -32,6 +34,17 @@ const router = createRouter({
             component: () => import('@/views/folder.vue')
         }
     ]
+})
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+    const user = userStore()
+    debugger
+    if (user.getToken() || to.path === '/mashed_potatoes_ui/index') {
+        next()
+    } else {
+        notify.warn('请先登录！')
+    }
 })
 
 export default router
