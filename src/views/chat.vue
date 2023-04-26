@@ -29,8 +29,8 @@
   </q-drawer>
 
   <q-page class="row full-height">
-    <router-view style="overflow: auto; min-height: 100%; max-height: 100%;  min-width: 400px; max-width: 400px;"/>
-    <q-page style="overflow: auto; min-height: 100%; max-height: 100%;  min-width: calc(100% - 400px); max-width: calc(100% - 400px);">
+    <router-view style="height: 100%;  width: 350px;"/>
+    <q-page style="height: 100%; width: calc(100% - 350px);">
       这里是聊天窗口
     </q-page>
   </q-page>
