@@ -39,7 +39,6 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
     const user = userStore()
-    debugger
     if (user.getToken() || to.path === '/mashed_potatoes_ui/index') {
         next()
     } else {
