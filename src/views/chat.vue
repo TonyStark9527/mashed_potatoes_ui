@@ -30,9 +30,61 @@
 
   <q-page class="row full-height">
     <router-view style="height: 100%;  width: 350px;"/>
-    <q-page style="height: 100%; width: calc(100% - 350px);">
-      这里是聊天窗口
-    </q-page>
+    <div style="width: calc(100% - 350px);" class="column full-height">
+      <div class="q-pa-xs" style="height: calc(100% - 200px);overflow: auto">
+        <q-scroll-area class="full-width full-height">
+          <q-chat-message
+              avatar="https://cdn.quasar.dev/img/avatar1.jpg"
+              :text="['hey, how are you?','hey, how are you?','hey, how are you?','hey, how are you?']"
+              stamp="7 minutes ago"
+              sent
+              text-color="white"
+              bg-color="secondary"
+          />
+          <q-chat-message
+              avatar="https://cdn.quasar.dev/img/avatar5.jpg"
+              :text="['doing fine, how r you?']"
+              stamp="4 minutes ago"
+              text-color="white"
+              bg-color="primary"
+          />
+          <q-chat-message
+              avatar="https://cdn.quasar.dev/img/avatar1.jpg"
+              :text="['hey, how are you?','hey, how are you?','hey, how are you?','hey, how are you?']"
+              stamp="7 minutes ago"
+              sent
+              text-color="white"
+              bg-color="secondary"
+          />
+          <q-chat-message
+              avatar="https://cdn.quasar.dev/img/avatar5.jpg"
+              :text="['doing fine, how r you?']"
+              stamp="4 minutes ago"
+              text-color="white"
+              bg-color="primary"
+          />
+          <q-chat-message
+              avatar="https://cdn.quasar.dev/img/avatar1.jpg"
+              :text="['hey, how are you?','hey, how are you?','hey, how are you?','hey, how are you?']"
+              stamp="7 minutes ago"
+              sent
+              text-color="white"
+              bg-color="secondary"
+          />
+          <q-chat-message
+              avatar="https://cdn.quasar.dev/img/avatar5.jpg"
+              :text="['doing fine, how r you?']"
+              stamp="4 minutes ago"
+              text-color="white"
+              bg-color="primary"
+          />
+        </q-scroll-area>
+      </div>
+      <div class="q-pa-xs q-gutter-sm" style="height: 200px">
+        <q-editor class="full-height" v-model="currentMessage"
+                  :definitions="{send: {tip: '发送',icon: 'send',label: '发送'}}" :toolbar="[['send']]"/>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -40,6 +92,8 @@
 import {ref} from "vue";
 
 const menu = ref('message');
+
+const currentMessage = ref('测试')
 </script>
 
 <style lang="sass">
