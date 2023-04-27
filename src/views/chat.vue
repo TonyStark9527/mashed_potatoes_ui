@@ -81,7 +81,7 @@
         </q-scroll-area>
       </div>
       <div class="q-pa-xs q-gutter-sm" style="height: 200px">
-        <q-editor class="full-height" v-model="currentMessage"
+        <q-editor class="full-height" v-model="toSendMessage"
                   :definitions="{send: {tip: '发送',icon: 'send',label: '发送'}}" :toolbar="[['send']]"/>
       </div>
     </div>
@@ -93,7 +93,9 @@ import {ref} from "vue";
 
 const menu = ref('message');
 
-const currentMessage = ref('测试')
+const toSendMessage = ref('测试')
+
+// TODO 集成websocket
 </script>
 
 <style lang="sass">
