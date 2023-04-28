@@ -1,9 +1,10 @@
 <template>
-  <div class="q-gutter-xs">
-    <q-list bordered class="full-height q-ma-xs">
-      <q-scroll-area class="full-width full-height">
+  <div class="q-gutter-none">
+
+      <q-scroll-area class="full-width full-height q-pa-xs">
+        <q-list class="full-height">
         <template v-for="(contact, index) in contacts">
-          <q-item class="q-py-md" clickable v-ripple>
+          <q-item class="q-py-md q-mx-auto" clickable v-ripple>
             <q-item-section avatar>
               <q-avatar>
                 <img :src="contact.avatar" alt=""/>
@@ -23,8 +24,9 @@
           </q-item>
           <q-separator v-if="index !== contacts.length - 1" inset="item" />
         </template>
+        </q-list>
       </q-scroll-area>
-    </q-list>
+
   </div>
 </template>
 <script setup lang="ts">

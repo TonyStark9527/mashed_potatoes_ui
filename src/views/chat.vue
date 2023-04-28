@@ -30,9 +30,9 @@
 
   <q-page class="row full-height">
     <router-view style="height: 100%;  width: 350px;"/>
-    <div style="width: calc(100% - 350px);" class="column full-height">
+    <div style="width: calc(100% - 350px);" class="column full-height q-gutter-none">
       <div class="q-pa-xs" style="height: calc(100% - 200px);overflow: auto">
-        <q-scroll-area class="full-width full-height">
+        <q-scroll-area class="full-width full-height" ref="scrollAreaRef">
           <q-chat-message
               avatar="https://cdn.quasar.dev/img/avatar1.jpg"
               :text="['hey, how are you?','hey, how are you?','hey, how are you?','hey, how are you?']"
@@ -82,19 +82,28 @@
       </div>
       <div class="q-pa-xs q-gutter-sm" style="height: 200px">
         <q-editor class="full-height" v-model="toSendMessage"
-                  :definitions="{send: {tip: '发送',icon: 'send',label: '发送'}}" :toolbar="[['send']]"/>
+                  :definitions="{send: {tip: '发送',icon: 'send',label: '发送', handler: click}}" :toolbar="[['send']]"/>
       </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const menu = ref('message');
 
 const toSendMessage = ref('测试')
 
+const scrollAreaRef = ref(null)
+
+function click() {
+  scrollAreaRef.value?.setScrollPosition('vertical', 1000, 1000)
+}
+
+onMounted(() => {
+  scrollAreaRef.value?.setScrollPosition('vertical', 1000, 1000)
+})
 // TODO 集成websocket
 </script>
 
