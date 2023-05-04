@@ -31,54 +31,16 @@
   <q-page class="row full-height">
     <router-view style="height: 100%;  width: 350px;"/>
     <div style="width: calc(100% - 350px);" class="column full-height q-gutter-none">
-      <div class="q-pa-xs" style="height: calc(100% - 200px);overflow: auto">
-        <q-scroll-area class="full-width full-height" ref="scrollAreaRef">
-          <q-chat-message
-              avatar="https://cdn.quasar.dev/img/avatar1.jpg"
-              :text="['hey, how are you?','hey, how are you?','hey, how are you?','hey, how are you?']"
-              stamp="7 minutes ago"
-              sent
-              text-color="white"
-              bg-color="secondary"
-          />
-          <q-chat-message
-              avatar="https://cdn.quasar.dev/img/avatar5.jpg"
-              :text="['doing fine, how r you?']"
-              stamp="4 minutes ago"
-              text-color="white"
-              bg-color="primary"
-          />
-          <q-chat-message
-              avatar="https://cdn.quasar.dev/img/avatar1.jpg"
-              :text="['hey, how are you?','hey, how are you?','hey, how are you?','hey, how are you?']"
-              stamp="7 minutes ago"
-              sent
-              text-color="white"
-              bg-color="secondary"
-          />
-          <q-chat-message
-              avatar="https://cdn.quasar.dev/img/avatar5.jpg"
-              :text="['doing fine, how r you?']"
-              stamp="4 minutes ago"
-              text-color="white"
-              bg-color="primary"
-          />
-          <q-chat-message
-              avatar="https://cdn.quasar.dev/img/avatar1.jpg"
-              :text="['hey, how are you?','hey, how are you?','hey, how are you?','hey, how are you?']"
-              stamp="7 minutes ago"
-              sent
-              text-color="white"
-              bg-color="secondary"
-          />
-          <q-chat-message
-              avatar="https://cdn.quasar.dev/img/avatar5.jpg"
-              :text="['doing fine, how r you?']"
-              stamp="4 minutes ago"
-              text-color="white"
-              bg-color="primary"
-          />
-        </q-scroll-area>
+      <div class="q-pa-xs" style="height: calc(100% - 200px);">
+        <q-infinite-scroll class="full-width full-height overflow-auto" @load="onLoad" reverse :offset="200" ref="scrollAreaRef">
+          <template v-slot:loading>
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="secondary" size="40px" />
+            </div>
+          </template>
+          <q-chat-message v-for="(message, index) in messages" :key="index"
+                          :avatar="message.avatar" :text="[message.content]" :stamp="message.stamp" :sent="message.sent" text-color="white" :bg-color="message.sent ? 'secondary' : 'primary'"/>
+        </q-infinite-scroll>
       </div>
       <div class="q-pa-xs q-gutter-sm" style="height: 200px">
         <q-editor class="full-height" v-model="toSendMessage"
@@ -89,21 +51,108 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {nextTick, onMounted, ref, watch} from "vue"
+import notify from "@/utils/notify";
 
 const menu = ref('message');
 
-const toSendMessage = ref('测试')
+const toSendMessage = ref('')
 
 const scrollAreaRef = ref(null)
 
-function click() {
-  scrollAreaRef.value?.setScrollPosition('vertical', 1000, 1000)
+const messages = ref([
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+    content: '你好呀',
+    stamp: '七分钟前',
+    sent: true
+  },
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+    content: '我好你妈个好',
+    stamp: '七分钟前',
+    sent: false
+  },
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+    content: '你好呀',
+    stamp: '七分钟前',
+    sent: true
+  },
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+    content: '我好你妈个好',
+    stamp: '七分钟前',
+    sent: false
+  },
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+    content: '你好呀',
+    stamp: '七分钟前',
+    sent: true
+  },
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+    content: '我好你妈个好',
+    stamp: '七分钟前',
+    sent: false
+  },
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+    content: '你好呀',
+    stamp: '七分钟前',
+    sent: true
+  },
+  {
+    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+    content: '我好你妈个好',
+    stamp: '七分钟前',
+    sent: false
+  }
+])
+
+async function click() {
+  if (toSendMessage.value === '') {
+    notify.warn('发送内容不能为空！')
+    return
+  }
+  messages.value.push({
+    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+    content: toSendMessage.value,
+    stamp: '刚刚',
+    sent: true
+  })
+  await nextTick()
+  let domScroll = scrollAreaRef.value!.$el
+  domScroll.scrollTop = domScroll.scrollHeight
 }
 
-onMounted(() => {
-  scrollAreaRef.value?.setScrollPosition('vertical', 1000, 1000)
-})
+function onLoad(index: any, done: any) {
+  setTimeout(() => {
+    messages.value.unshift({
+      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+      content: '我的评价是6',
+      stamp: '七分钟前',
+      sent: false
+    }, {
+      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+      content: '我的评价是6',
+      stamp: '七分钟前',
+      sent: false
+    },{
+      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+      content: '我的评价是6',
+      stamp: '七分钟前',
+      sent: false
+    },{
+      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+      content: '我的评价是6',
+      stamp: '七分钟前',
+      sent: false
+    })
+    done()
+  }, 2000)
+}
 // TODO 集成websocket
 </script>
 
