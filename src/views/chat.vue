@@ -124,7 +124,11 @@ async function click() {
   })
   await nextTick()
   let domScroll = scrollAreaRef.value!.$el
-  domScroll.scrollTop = domScroll.scrollHeight
+  // 聊天框带有动画的滚动到最底部，当消息发送成功时
+  domScroll.scrollTo({
+    top: domScroll.scrollHeight,
+    behavior: 'smooth'
+  })
 }
 
 function onLoad(index: any, done: any) {
