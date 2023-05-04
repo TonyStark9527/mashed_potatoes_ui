@@ -58,7 +58,7 @@ const menu = ref('message');
 
 const toSendMessage = ref('')
 
-const scrollAreaRef = ref(null)
+const scrollAreaRef = ref<any>(null)
 
 const messages = ref([
   {
@@ -123,7 +123,7 @@ async function click() {
     sent: true
   })
   await nextTick()
-  let domScroll = scrollAreaRef.value!.$el
+  let domScroll = scrollAreaRef.value.$el
   // 聊天框带有动画的滚动到最底部，当消息发送成功时
   domScroll.scrollTo({
     top: domScroll.scrollHeight,
