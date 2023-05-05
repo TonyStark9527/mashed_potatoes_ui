@@ -16,6 +16,9 @@ export const userStore = defineStore('user', {
         },
         getToken(): string {
             return this.token
+        },
+        getUsername(): string {
+            return this.username
         }
     }
 })
