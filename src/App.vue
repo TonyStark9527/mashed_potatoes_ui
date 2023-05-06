@@ -24,7 +24,7 @@
           <q-btn-dropdown v-if="login.isLogin" auto-close stretch flat>
             <template v-slot:label>
               <q-avatar>
-                <q-img src="https://cdn.quasar.dev/img/boy-avatar.png"/>
+                <q-img :src="user.getAvatar()"/>
               </q-avatar>
             </template>
             <q-list>
@@ -52,7 +52,9 @@
       </q-toolbar>
     </q-header>
     <q-page-container class="fullscreen z-inherit">
-      <router-view/>
+      <router-view v-slot="{ Component, route }">
+        <component ref="routerViewRef" :is="Component" :key="route.path" />
+      </router-view>
     </q-page-container>
   </q-layout>
   <q-dialog v-model="login.loginPanel" persistent>
@@ -92,20 +94,27 @@ import {ref, watch} from 'vue'
 import api from './api/axios'
 import {userStore} from "@/store/userStore"
 import notify from "@/utils/notify"
+import {useRoute} from "vue-router"
+import webSocket from "@/utils/webSocket"
 
 // 主题样式
 const theme = ref(true)
-
+// router-view的ref，用来调用子组件的方法
+const routerViewRef = ref<any>(null)
+// 用来获取当前路由
+const route = useRoute()
+// 用户相关
 const user = userStore()
 
 const $q = useQuasar()
 
+// 登录相关
 const login = ref({
   loginPanel: false, // 是否弹出登录面板
   loginLoading: false, // 调用登录接口时，登录按钮的loading状态
   hidePassword: true,
-  username: '', // 用户名
-  password: '', // 用户密码
+  username: 'tom', // 用户名
+  password: '123456', // 用户密码
   isLogin: false // 用户菜单显示控制，true为登录菜单，false为未登录菜单
 })
 
@@ -124,7 +133,7 @@ function loginIn() {
       api.get('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
         if (userInfo.data.code === '00000' && userInfo.data.result) {
           // 设置全局用户信息
-          user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname)
+          user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, userInfo.data.result.avatar)
           // 关闭登录按钮loading状态
           login.value.loginLoading = false
           // 关闭登录弹框
@@ -133,6 +142,14 @@ function loginIn() {
           login.value.isLogin = true
           // 提示用户登录成功
           notify.success('登录成功！')
+          // 创建websocket连接
+          webSocket.create('ws://127.0.0.1:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
+            if (['message', 'friend'].includes(<string>route.meta.key)) {
+              console.log(messageEvent)
+              let message = JSON.parse(messageEvent.data)
+              routerViewRef.value.receiveMessage(message)
+            }
+          })
         }
       })
     } else {
