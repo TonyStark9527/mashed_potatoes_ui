@@ -18,19 +18,28 @@ const router = createRouter({
             path: '/mashed_potatoes_ui/chat',
             component: () => import('@/views/chat.vue'),
             redirect: '/mashed_potatoes_ui/chat/message',
+            meta: {
+                key: 'chat'
+            },
             children: [
                 {
                     path: 'message',
-                    component: () => import('@/views/chat/message.vue')
+                    component: () => import('@/views/chat/message.vue'),
+                    meta: {
+                        key: 'message'
+                    }
                 },
                 {
                     path: 'friend',
-                    component: () => import('@/views/chat/friend.vue')
+                    component: () => import('@/views/chat/friend.vue'),
+                    meta: {
+                        key: 'friend'
+                    }
                 }
             ]
         },
         {
-            path: '/mashed_potatoes/folder',
+            path: '/mashed_potatoes_ui/folder',
             component: () => import('@/views/folder.vue')
         }
     ]
