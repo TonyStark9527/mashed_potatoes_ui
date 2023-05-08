@@ -53,7 +53,7 @@
     </q-header>
     <q-page-container class="fullscreen z-inherit">
       <router-view v-slot="{ Component, route }">
-        <component ref="routerViewRef" :is="Component" :key="route.path" />
+        <component ref="routerViewRef" :is="Component"/>
       </router-view>
     </q-page-container>
   </q-layout>
@@ -143,7 +143,7 @@ function loginIn() {
           // 提示用户登录成功
           notify.success('登录成功！')
           // 创建websocket连接
-          webSocket.create('ws://127.0.0.1:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
+          webSocket.create('ws://1.13.23.227:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
             if (['message', 'friend'].includes(<string>route.meta.key)) {
               console.log(messageEvent)
               let message = JSON.parse(messageEvent.data)
