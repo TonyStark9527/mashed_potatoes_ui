@@ -4,7 +4,7 @@
     <q-scroll-area class="full-width full-height q-pa-xs">
       <q-list class="full-height">
         <template v-for="(contact, index) in contacts">
-          <q-item class="q-py-md q-mx-auto" clickable v-ripple>
+          <q-item class="q-py-md q-mx-auto" clickable v-ripple @click="emitToParent(contact)">
             <q-item-section avatar>
               <q-avatar>
                 <img :src="contact.avatar" alt=""/>
@@ -74,6 +74,11 @@ let contacts = ref(
     //   }
     // ]
 )
+
+const emits = defineEmits(['emitValue'])
+function emitToParent(value: any) {
+  emits('emitValue', value)
+}
 
 api.get('/v1/chat/chat/contacts/' + user.getUsername()).then(res => {
   if (res.data.code === '00000' && res.data.result) {

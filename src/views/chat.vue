@@ -29,7 +29,7 @@
   </q-drawer>
 
   <q-page class="row full-height">
-    <router-view v-slot="{Component, route}" style="height: 100%;  width: 350px;">
+    <router-view v-slot="{Component, route}" style="height: 100%;  width: 350px;" @emitValue="getEmitValue">
       <component :is="Component"/>
     </router-view>
     <div style="width: calc(100% - 350px);" class="column full-height q-gutter-none">
@@ -121,6 +121,10 @@ const messages = ref<Array<any>>([
     sent: false
   }
 ])
+
+function getEmitValue(value: any) {
+  currentContact.value = value
+}
 
 async function initMessage() {
   api.get('').then(initialMessages => {
