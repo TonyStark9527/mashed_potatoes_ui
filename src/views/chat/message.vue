@@ -4,7 +4,7 @@
     <q-scroll-area class="full-width full-height q-pa-xs">
       <q-list class="full-height">
         <template v-for="(contact, index) in contacts">
-          <q-item class="q-py-md q-mx-auto" clickable v-ripple @click="emitToParent(contact)">
+          <q-item class="q-py-md q-mx-auto" clickable v-ripple @click="selectContact(contact)">
             <q-item-section avatar>
               <q-avatar>
                 <img :src="contact.avatar" alt=""/>
@@ -18,6 +18,7 @@
               </q-item-label>
             </q-item-section>
             <q-item-section side top>
+              <!--ui调整-->
               <q-item-label caption>{{ contact.lastContactDateTime }}</q-item-label>
               <q-badge v-if="contact.unReadMessageCount !== 0" rounded color="red" class="q-mt-xs">
                 {{ contact.unReadMessageCount > 99 ? "99+" : contact.unReadMessageCount }}
@@ -34,50 +35,20 @@
 <script setup lang="ts">
 
 import {ref} from "vue"
-import api from "@/api/axios";
+import api from "@/api/axios"
 import {userStore} from "@/store/userStore"
 
 const user = userStore()
-let contacts = ref(
-    // [
-    //   {
-    //     avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-    //     remark: '约翰',
-    //     lastSendUser: '约翰',
-    //     lastMessage: '明天周末，一起出去打球怎么样？',
-    //     datetime: '刚刚',
-    //     unReadMessageCount: 3
-    //   },
-    //   {
-    //     avatar: 'https://cdn.quasar.dev/img/avatar4.jpg',
-    //     remark: '托尼',
-    //     lastSendUser: '我',
-    //     lastMessage: '你吃了吗？',
-    //     datetime: '刚刚',
-    //     unReadMessageCount: 0
-    //   },
-    //   {
-    //     avatar: 'https://cdn.quasar.dev/img/avatar3.jpg',
-    //     remark: '杰妮',
-    //     lastSendUser: '我',
-    //     lastMessage: '已读不回是吧',
-    //     datetime: '刚刚',
-    //     unReadMessageCount: 0
-    //   },
-    //   {
-    //     avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-    //     remark: '简',
-    //     lastSendUser: '简',
-    //     lastMessage: '你™才是傻子',
-    //     datetime: '刚刚',
-    //     unReadMessageCount: 9999
-    //   }
-    // ]
-)
+let contacts = ref<any>()
 
-const emits = defineEmits(['emitValue'])
-function emitToParent(value: any) {
-  emits('emitValue', value)
+const emits = defineEmits(['emitChildren'])
+
+function selectContact(value: any) {
+  const params = {
+    functionName: 'selectContact',
+    data: value
+  }
+  emits('emitChildren', params)
 }
 
 api.get('/v1/chat/chat/contacts/' + user.getUsername()).then(res => {

@@ -29,7 +29,7 @@
   </q-drawer>
 
   <q-page class="row full-height">
-    <router-view v-slot="{Component, route}" style="height: 100%;  width: 350px;" @emitValue="getEmitValue">
+    <router-view v-slot="{Component, route}" style="height: 100%;  width: 350px;" @emitChildren="emitFunction">
       <component :is="Component"/>
     </router-view>
     <div style="width: calc(100% - 350px);" class="column full-height q-gutter-none">
@@ -63,7 +63,9 @@ import {userStore} from "@/store/userStore"
 // 当前菜单
 const menu = ref('message')
 // 当前聊天框中的好友用户名 or c
-const currentContact = ref<any>(null)
+const currentContact = ref<any>({
+  contactId: ""
+})
 const user = userStore()
 
 const toSendMessage = ref('')
@@ -122,8 +124,21 @@ const messages = ref<Array<any>>([
   }
 ])
 
-function getEmitValue(value: any) {
-  currentContact.value = value
+function emitFunction(params: any) {
+  let functionName = params.functionName
+  switch (functionName) {
+    case 'selectContact': {
+      selectContact(params.data)
+      break
+    }
+    default: break
+  }
+}
+
+function selectContact(contact: any) {
+  currentContact.value.contactId = contact.contactId
+  console.log(currentContact.value)
+  // TODO 获取当前聊天的消息
 }
 
 async function initMessage() {
@@ -169,7 +184,7 @@ async function sendMessage() {
  */
 function receiveMessage(newMessages: any) {
   // TODO 判断当前窗口是否是消息来源
-  if (currentContact !== null && currentContact.contactId === newMessages.contactId) {
+  if (currentContact.contactId && currentContact.contactId === newMessages.contactId) {
     showReceiveMessage(newMessages)
   } else {
     // TODO 显示未读
