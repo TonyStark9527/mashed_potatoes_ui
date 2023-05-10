@@ -30,7 +30,7 @@
 
   <q-page class="row full-height">
     <router-view v-slot="{Component, route}" style="height: 100%;  width: 350px;" @emitChildren="emitFunction">
-      <component :is="Component"/>
+      <component ref="routerViewRef" :is="Component"/>
     </router-view>
     <div style="width: calc(100% - 350px);" class="column full-height q-gutter-none">
       <div class="q-pa-xs" style="height: calc(100% - 200px);">
@@ -65,12 +65,14 @@ import {userStore} from "@/store/userStore"
 const menu = ref('message')
 // 当前聊天框中的好友contact
 const currentContact = ref<any>({
-  contactId: ""
+  contactId: "",
+  friendUsername: ""
 })
 const user = userStore()
 
 const toSendMessage = ref('')
 
+const routerViewRef = ref<any>(null)
 const scrollAreaRef = ref<any>(null)
 // TODO 可以考虑合并
 const haveMoreMessage = ref<boolean>(false)
@@ -94,6 +96,16 @@ function emitFunction(params: any) {
 
 function selectContact(contact: any) {
   currentContact.value.contactId = contact.contactId
+  currentContact.value.friendUsername = contact.friendUsername
+  if (contact.unReadMessageCount > 0) {
+    api.put('/v1/chat/chat/message/' + contact.contactId + '/read/' + contact.friendUsername).then(result => {
+      if (result.data.code === '00000' && result.data.result) {
+        console.log("消息已读成功")
+      } else {
+        console.log("消息已读失败")
+      }
+    })
+  }
   console.log(currentContact.value)
   // TODO 获取当前聊天的消息
 }
@@ -112,6 +124,7 @@ async function initMessage() {
       }
     }
   })
+  // TODO 处理失效问题
   await nextTick()
   scrollToBottom()
   haveMoreMessage.value = true
@@ -143,6 +156,7 @@ async function sendMessage() {
         sendDateTime: '刚刚',
         sent: true
       })
+      routerViewRef.value.sendMessageCurrent(currentContact.contactId, toSendMessage.value)
       // 发送成功则清空消息
       toSendMessage.value = ''
       await nextTick()
@@ -162,8 +176,16 @@ function receiveMessage(newMessages: any) {
   // TODO 判断当前窗口是否是消息来源
   if (currentContact.value.contactId && currentContact.value.contactId === newMessages.contactId) {
     showReceiveMessage(newMessages)
+    api.put('/v1/chat/chat/message/' + currentContact.value.contactId + '/read/' + currentContact.value.friendUsername).then(result => {
+      if (result.data.code === '00000' && result.data.result) {
+        console.log("消息已读成功")
+      } else {
+        console.log("消息已读失败")
+      }
+    })
+    routerViewRef.value.receiveMessageCurrent(newMessages.contactId, newMessages.content)
   } else {
-    // TODO 显示未读
+    routerViewRef.value.receiveMessageNoCurrent(newMessages.contactId, newMessages.content)
   }
 }
 
@@ -216,8 +238,9 @@ function onLoad(index: any, done: any) {
       if (initialMessages.data.code === '00000') {
         if (initialMessages.data.result.content.length > 0) {
           let content = initialMessages.data.result.content
-          content.reverse()
-          messages.value.unshift(content)
+          content.forEach((message: any) => {
+            messages.value.unshift(message)
+          })
         } else {
           haveMoreMessage.value = false
         }

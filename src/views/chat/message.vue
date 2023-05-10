@@ -37,6 +37,7 @@
 import {ref} from "vue"
 import api from "@/api/axios"
 import {userStore} from "@/store/userStore"
+import notify from "@/utils/notify"
 
 const user = userStore()
 let contacts = ref<any>()
@@ -44,6 +45,12 @@ let contacts = ref<any>()
 const emits = defineEmits(['emitChildren'])
 
 function selectContact(value: any) {
+  // 将选中的聊天框的未读消息设置为0
+  contacts.value.forEach((contact: any) => {
+    if (contact.friendUsername === value.friendUsername) {
+      contact.unReadMessageCount = 0
+    }
+  })
   const params = {
     functionName: 'selectContact',
     data: value
@@ -57,5 +64,42 @@ api.get('/v1/chat/chat/contacts/' + user.getUsername()).then(res => {
   }
 })
 
+// TODO 完善这个三个方法 时间点，最后发送人，最后一条消息
+function receiveMessageNoCurrent(contactId: number, content: string) {
+  notify.info('您有一条未读消息')
+  contacts.value.forEach((contact: any) => {
+    if (contact.contactId === contactId) {
+      contact.unReadMessageCount += 1
+      contact.lastMessage = content
+      contact.lastSendAlias = contact.remark
+    }
+  })
+  console.log(contacts.value)
+}
+
+function receiveMessageCurrent(contactId: number, content: string) {
+  contacts.value.forEach((contact: any) => {
+    if (contact.contactId === contactId) {
+      contact.lastMessage = content
+      contact.lastSendAlias = contact.remark
+    }
+  })
+  console.log(contacts.value)
+}
+
+function sendMessageCurrent(contactId: number, content: string) {
+  contacts.value.forEach((contact: any) => {
+    if (contact.contactId === contactId) {
+      contact.lastMessage = content
+      contact.lastSendAlias = '我'
+    }
+  })
+}
+
+defineExpose({
+  receiveMessageNoCurrent,
+  sendMessageCurrent,
+  receiveMessageCurrent
+})
 // TODO 调用接口获取contacts
 </script>
