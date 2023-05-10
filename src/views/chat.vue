@@ -36,13 +36,14 @@
       <div class="q-pa-xs" style="height: calc(100% - 200px);">
         <q-infinite-scroll class="full-width full-height overflow-auto" @load="onLoad" reverse :offset="0"
                            ref="scrollAreaRef">
-          <template v-slot:loading>
+          <template v-if="haveMoreMessage" v-slot:loading>
             <div class="row justify-center q-my-md">
               <q-spinner-dots color="secondary" size="40px"/>
             </div>
           </template>
           <q-chat-message v-for="(message, index) in messages" :key="index"
-                          :avatar="message.avatar" :text="[message.content]" :stamp="message.stamp" :sent="message.sent"
+                          :avatar="message.avatar" :text="[message.content]" :stamp="message.sendDateTime"
+                          :sent="message.sent"
                           text-color="white" :bg-color="message.sent ? 'secondary' : 'primary'"/>
         </q-infinite-scroll>
       </div>
@@ -56,13 +57,13 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, ref} from "vue"
+import {nextTick, ref, watch} from "vue"
 import notify from "@/utils/notify"
 import api from "@/api/axios"
 import {userStore} from "@/store/userStore"
 // 当前菜单
 const menu = ref('message')
-// 当前聊天框中的好友用户名 or c
+// 当前聊天框中的好友contact
 const currentContact = ref<any>({
   contactId: ""
 })
@@ -71,59 +72,14 @@ const user = userStore()
 const toSendMessage = ref('')
 
 const scrollAreaRef = ref<any>(null)
+// TODO 可以考虑合并
+const haveMoreMessage = ref<boolean>(false)
+const firstMoreMessage = ref<boolean>(true)
 
 // 消息需要通过接口获取
-const messages = ref<Array<any>>([
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-    content: '你好呀',
-    stamp: '七分钟前',
-    sent: true
-  },
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-    content: '我好你妈个好',
-    stamp: '七分钟前',
-    sent: false
-  },
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-    content: '你好呀',
-    stamp: '七分钟前',
-    sent: true
-  },
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-    content: '我好你妈个好',
-    stamp: '七分钟前',
-    sent: false
-  },
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-    content: '你好呀',
-    stamp: '七分钟前',
-    sent: true
-  },
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-    content: '我好你妈个好',
-    stamp: '七分钟前',
-    sent: false
-  },
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-    content: '你好呀',
-    stamp: '七分钟前',
-    sent: true
-  },
-  {
-    avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-    content: '我好你妈个好',
-    stamp: '七分钟前',
-    sent: false
-  }
-])
+const messages = ref<Array<any>>([])
 
+// 接收子组件的调用
 function emitFunction(params: any) {
   let functionName = params.functionName
   switch (functionName) {
@@ -131,7 +87,8 @@ function emitFunction(params: any) {
       selectContact(params.data)
       break
     }
-    default: break
+    default:
+      break
   }
 }
 
@@ -141,12 +98,25 @@ function selectContact(contact: any) {
   // TODO 获取当前聊天的消息
 }
 
+/**
+ * 初始化消息
+ */
 async function initMessage() {
-  api.get('').then(initialMessages => {
-    // TODO 设置messages的值
+  await api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername()).then(initialMessages => {
+    if (initialMessages.data.code === '00000') {
+      console.log('获取0页的聊天记录')
+      if (initialMessages.data.result.content.length > 0) {
+        let content = initialMessages.data.result.content
+        content.reverse()
+        messages.value = content
+      }
+    }
   })
   await nextTick()
   scrollToBottom()
+  haveMoreMessage.value = true
+  scrollAreaRef.value.resume()
+  console.log('滚动条启动')
 }
 
 /**
@@ -158,22 +128,28 @@ async function sendMessage() {
     return
   }
   // TODO 判断消息是发给用户还是群
+  // TODO 完善接口
   await api.post('/v1/chat/websocket/send_to_user',
       {
         sourceUsername: user.getUsername(),
         sourceAvatar: user.getAvatar(),
-        contactId: currentContact.contactId,
+        contactId: currentContact.value.contactId,
         content: toSendMessage.value
       }).then(async res => {
     if (res.data.code === '00000' && res.data.result) {
       messages.value.push({
         avatar: user.getAvatar(),
         content: toSendMessage.value,
-        stamp: '刚刚',
+        sendDateTime: '刚刚',
         sent: true
       })
+      // 发送成功则清空消息
+      toSendMessage.value = ''
       await nextTick()
       scrollToBottom()
+    } else {
+      // 发送失败
+      notify.error('消息发送失败！')
     }
   })
 }
@@ -184,7 +160,7 @@ async function sendMessage() {
  */
 function receiveMessage(newMessages: any) {
   // TODO 判断当前窗口是否是消息来源
-  if (currentContact.contactId && currentContact.contactId === newMessages.contactId) {
+  if (currentContact.value.contactId && currentContact.value.contactId === newMessages.contactId) {
     showReceiveMessage(newMessages)
   } else {
     // TODO 显示未读
@@ -199,7 +175,7 @@ async function showReceiveMessage(message: any) {
   messages.value.push({
     avatar: message.sourceAvatar,
     content: message.content,
-    stamp: '刚刚',
+    sendDateTime: '刚刚',
     sent: false
   })
   await nextTick()
@@ -224,33 +200,40 @@ function scrollToBottom() {
  * @param done
  */
 function onLoad(index: any, done: any) {
-  // TODO 当之间没有聊天消息或者聊天消息不足时，不显示加载框
-  // TODO 接口请求数据进行渲染
-  setTimeout(() => {
-    messages.value.unshift({
-      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-      content: '我的评价是6',
-      stamp: '七分钟前',
-      sent: false
-    }, {
-      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-      content: '我的评价是6',
-      stamp: '七分钟前',
-      sent: false
-    }, {
-      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-      content: '我的评价是6',
-      stamp: '七分钟前',
-      sent: false
-    }, {
-      avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-      content: '我的评价是6',
-      stamp: '七分钟前',
-      sent: false
+  // 需要在一开始调用的时候停止
+  console.log(index)
+  if (!haveMoreMessage.value) {
+    // 停止加载更多消息
+    scrollAreaRef.value.stop()
+    // 因为第一次点击chat会调用该方法，所以需要设置index为0
+    if (firstMoreMessage.value) {
+      scrollAreaRef.value.setIndex(0)
+      firstMoreMessage.value = false
+    }
+  }
+  if (haveMoreMessage.value) {
+    api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername() + '?page=' + index).then(initialMessages => {
+      if (initialMessages.data.code === '00000') {
+        if (initialMessages.data.result.content.length > 0) {
+          let content = initialMessages.data.result.content
+          content.reverse()
+          messages.value.unshift(content)
+        } else {
+          haveMoreMessage.value = false
+        }
+      }
     })
-    done()
-  }, 2000)
+  }
+  done()
 }
+
+// 监听currentContact的变化
+watch(() => currentContact.value.contactId, (value, oldValue) => {
+  firstMoreMessage.value = false
+  haveMoreMessage.value = false
+  scrollAreaRef.value.reset()
+  initMessage()
+})
 
 defineExpose({
   receiveMessage
