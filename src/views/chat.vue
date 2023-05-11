@@ -29,9 +29,11 @@
   </q-drawer>
 
   <q-page class="row full-height">
-    <router-view v-slot="{Component, route}" style="height: 100%;  width: 350px;" @emitChildren="emitFunction">
-      <component ref="routerViewRef" :is="Component"/>
-    </router-view>
+    <div style="width: 350px" class="column full-height">
+      <router-view v-slot="{Component, route}" @emitChildren="emitFunction">
+        <component ref="routerViewRef" :is="Component"/>
+      </router-view>
+    </div>
     <div style="width: calc(100% - 350px);" class="column full-height q-gutter-none">
       <div class="q-pa-xs" style="height: calc(100% - 200px);">
         <q-infinite-scroll class="full-width full-height overflow-auto" @load="onLoad" reverse :offset="0"
@@ -61,6 +63,7 @@ import {nextTick, ref, watch} from "vue"
 import notify from "@/utils/notify"
 import api from "@/api/axios"
 import {userStore} from "@/store/userStore"
+import dateTimeUtil from '@/utils/dateTime'
 // 当前菜单
 const menu = ref('message')
 // 当前聊天框中的好友contact
@@ -113,23 +116,22 @@ function selectContact(contact: any) {
 /**
  * 初始化消息
  */
-async function initMessage() {
-  await api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername()).then(initialMessages => {
+function initMessage() {
+  api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername()).then(async initialMessages => {
     if (initialMessages.data.code === '00000') {
       console.log('获取0页的聊天记录')
       if (initialMessages.data.result.content.length > 0) {
         let content = initialMessages.data.result.content
         content.reverse()
         messages.value = content
+        await nextTick()
+        scrollToBottom()
       }
     }
   })
   // TODO 处理失效问题
-  await nextTick()
-  scrollToBottom()
-  haveMoreMessage.value = true
-  scrollAreaRef.value.resume()
-  console.log('滚动条启动')
+  // haveMoreMessage.value = true
+  // scrollAreaRef.value.resume()
 }
 
 /**
@@ -153,10 +155,10 @@ async function sendMessage() {
       messages.value.push({
         avatar: user.getAvatar(),
         content: toSendMessage.value,
-        sendDateTime: '刚刚',
+        sendDateTime: dateTimeUtil.now(''),
         sent: true
       })
-      routerViewRef.value.sendMessageCurrent(currentContact.contactId, toSendMessage.value)
+      routerViewRef.value.sendMessageCurrent(currentContact.value.contactId, toSendMessage.value)
       // 发送成功则清空消息
       toSendMessage.value = ''
       await nextTick()
@@ -173,7 +175,6 @@ async function sendMessage() {
  * @param newMessages
  */
 function receiveMessage(newMessages: any) {
-  // TODO 判断当前窗口是否是消息来源
   if (currentContact.value.contactId && currentContact.value.contactId === newMessages.contactId) {
     showReceiveMessage(newMessages)
     api.put('/v1/chat/chat/message/' + currentContact.value.contactId + '/read/' + currentContact.value.friendUsername).then(result => {
@@ -197,7 +198,7 @@ async function showReceiveMessage(message: any) {
   messages.value.push({
     avatar: message.sourceAvatar,
     content: message.content,
-    sendDateTime: '刚刚',
+    sendDateTime: dateTimeUtil.now(''),
     sent: false
   })
   await nextTick()
@@ -208,12 +209,21 @@ async function showReceiveMessage(message: any) {
  * 聊天框滚动条平移到底部
  */
 function scrollToBottom() {
+  console.log('滚动条最底部')
   let domScroll = scrollAreaRef.value.$el
   // 聊天框带有动画的滚动到最底部
   domScroll.scrollTo({
     top: domScroll.scrollHeight,
     behavior: 'smooth'
   })
+
+  if (firstMoreMessage.value) {
+    setTimeout(() => {
+      console.log('启动滚动条')
+      haveMoreMessage.value = true
+      scrollAreaRef.value.resume()
+    }, 2000)
+  }
 }
 
 /**
@@ -222,37 +232,38 @@ function scrollToBottom() {
  * @param done
  */
 function onLoad(index: any, done: any) {
-  // 需要在一开始调用的时候停止
-  console.log(index)
-  if (!haveMoreMessage.value) {
-    // 停止加载更多消息
-    scrollAreaRef.value.stop()
-    // 因为第一次点击chat会调用该方法，所以需要设置index为0
-    if (firstMoreMessage.value) {
-      scrollAreaRef.value.setIndex(0)
-      firstMoreMessage.value = false
-    }
-  }
-  if (haveMoreMessage.value) {
-    api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername() + '?page=' + index).then(initialMessages => {
-      if (initialMessages.data.code === '00000') {
-        if (initialMessages.data.result.content.length > 0) {
-          let content = initialMessages.data.result.content
-          content.forEach((message: any) => {
-            messages.value.unshift(message)
-          })
-        } else {
-          haveMoreMessage.value = false
-        }
+  setTimeout(() => {
+    // 需要在一开始调用的时候停止
+    if (!haveMoreMessage.value) {
+      // 停止加载更多消息
+      scrollAreaRef.value.stop()
+      // 因为第一次点击chat会调用该方法，所以需要设置index为0
+      if (firstMoreMessage.value) {
+        scrollAreaRef.value.setIndex(0)
+        firstMoreMessage.value = false
       }
-    })
-  }
-  done()
+    }
+    if (haveMoreMessage.value) {
+      api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername() + '?page=' + index).then(initialMessages => {
+        if (initialMessages.data.code === '00000') {
+          if (initialMessages.data.result.content.length > 0) {
+            let content = initialMessages.data.result.content
+            content.forEach((message: any) => {
+              messages.value.unshift(message)
+            })
+          } else {
+            haveMoreMessage.value = false
+          }
+        }
+      })
+    }
+    done()
+  }, 2000)
 }
 
 // 监听currentContact的变化
 watch(() => currentContact.value.contactId, (value, oldValue) => {
-  firstMoreMessage.value = false
+  firstMoreMessage.value = true
   haveMoreMessage.value = false
   scrollAreaRef.value.reset()
   initMessage()
