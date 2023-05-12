@@ -119,13 +119,15 @@ function selectContact(contact: any) {
 function initMessage() {
   api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername()).then(async initialMessages => {
     if (initialMessages.data.code === '00000') {
-      console.log('获取0页的聊天记录')
       if (initialMessages.data.result.content.length > 0) {
         let content = initialMessages.data.result.content
         content.reverse()
         messages.value = content
         await nextTick()
-        scrollToBottom()
+        if (initialMessages.data.result.last) {
+          notify.info('已展示所有消息')
+        }
+        scrollToBottom(initialMessages.data.result.last)
       }
     }
   })
@@ -208,7 +210,7 @@ async function showReceiveMessage(message: any) {
 /**
  * 聊天框滚动条平移到底部
  */
-function scrollToBottom() {
+function scrollToBottom(last: boolean = false) {
   console.log('滚动条最底部')
   let domScroll = scrollAreaRef.value.$el
   // 聊天框带有动画的滚动到最底部
@@ -217,7 +219,7 @@ function scrollToBottom() {
     behavior: 'smooth'
   })
 
-  if (firstMoreMessage.value) {
+  if (firstMoreMessage.value && !last) {
     setTimeout(() => {
       console.log('启动滚动条')
       haveMoreMessage.value = true
@@ -251,6 +253,7 @@ function onLoad(index: any, done: any) {
             messages.value = content.concat(messages.value)
             done()
           } else {
+            notify.info('没有更多消息')
             haveMoreMessage.value = false
             done()
           }
