@@ -118,6 +118,13 @@ const login = ref({
   isLogin: false // 用户菜单显示控制，true为登录菜单，false为未登录菜单
 })
 
+automaticLogin()
+
+function automaticLogin() {
+  let item = $q.localStorage.getItem('mashed_potatoes_token');
+  console.log(item)
+}
+
 function loginIn() {
   if (!login.value.username || !login.value.password) {
     notify.warn('请输入用户名和密码！')
@@ -130,6 +137,8 @@ function loginIn() {
     if (res.data.code === '00000' && res.data.result) {
       // 设置用户token，请求用户信息
       user.setToken(res.data.result)
+      $q.localStorage.set('mashed_potatoes_token', res.data.result)
+      $q.sessionStorage.set('mashed_potatoes_token', res.data.result)
       api.get('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
         if (userInfo.data.code === '00000' && userInfo.data.result) {
           // 设置全局用户信息
