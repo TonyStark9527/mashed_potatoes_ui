@@ -23,5 +23,3 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           BRANCH: preview
           FOLDER: dist
-env:
-  SERVER: production
