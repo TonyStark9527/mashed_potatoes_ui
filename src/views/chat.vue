@@ -242,22 +242,21 @@ function onLoad(index: any, done: any) {
         scrollAreaRef.value.setIndex(0)
         firstMoreMessage.value = false
       }
-    }
-    if (haveMoreMessage.value) {
+    } else {
       api.get('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername() + '?page=' + index).then(initialMessages => {
         if (initialMessages.data.code === '00000') {
           if (initialMessages.data.result.content.length > 0) {
             let content = initialMessages.data.result.content
-            content.forEach((message: any) => {
-              messages.value.unshift(message)
-            })
+            content = content.reverse()
+            messages.value = content.concat(messages.value)
+            done()
           } else {
             haveMoreMessage.value = false
+            done()
           }
         }
       })
     }
-    done()
   }, 2000)
 }
 
