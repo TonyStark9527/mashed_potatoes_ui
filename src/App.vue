@@ -90,7 +90,7 @@
 <script setup lang="ts">
 
 import {useQuasar} from 'quasar'
-import {ref, watch} from 'vue'
+import {onMounted, ref, watch} from 'vue'
 import api from './api/axios'
 import {userStore} from "@/store/userStore"
 import notify from "@/utils/notify"
@@ -118,11 +118,21 @@ const login = ref({
   isLogin: false // 用户菜单显示控制，true为登录菜单，false为未登录菜单
 })
 
-automaticLogin()
-
 function automaticLogin() {
-  let item = $q.localStorage.getItem('mashed_potatoes_token');
-  console.log(item)
+  let token = <string>$q.localStorage.getItem('mashed_potatoes_token')
+  if (token) {
+    user.setToken(token)
+    api.get('/v1/user/user/token/user_info').then(userInfo => {
+      if (userInfo.data.code === '00000' && userInfo.data.result) {
+        // 设置全局用户信息
+        user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, userInfo.data.result.avatar)
+        // 用户菜单切换为已登录菜单
+        login.value.isLogin = true
+        // 创建websocket
+        createWebSocket()
+      }
+    })
+  }
 }
 
 function loginIn() {
@@ -138,7 +148,6 @@ function loginIn() {
       // 设置用户token，请求用户信息
       user.setToken(res.data.result)
       $q.localStorage.set('mashed_potatoes_token', res.data.result)
-      $q.sessionStorage.set('mashed_potatoes_token', res.data.result)
       api.get('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
         if (userInfo.data.code === '00000' && userInfo.data.result) {
           // 设置全局用户信息
@@ -151,14 +160,8 @@ function loginIn() {
           login.value.isLogin = true
           // 提示用户登录成功
           notify.success('登录成功！')
-          // 创建websocket连接
-          webSocket.create('ws://1.13.23.227:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
-            if (['message', 'friend'].includes(<string>route.meta.key)) {
-              console.log(messageEvent)
-              let message = JSON.parse(messageEvent.data)
-              routerViewRef.value.receiveMessage(message)
-            }
-          })
+          // 创建websocket
+          createWebSocket()
         }
       })
     } else {
@@ -170,11 +173,26 @@ function loginIn() {
   })
 }
 
+function createWebSocket() {
+  // 创建websocket连接
+  webSocket.create('ws://1.13.23.227:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
+    if (['message', 'friend'].includes(<string>route.meta.key)) {
+      console.log(messageEvent)
+      let message = JSON.parse(messageEvent.data)
+      routerViewRef.value.receiveMessage(message)
+    }
+  })
+}
+
 const menu = ref('home')
 
 watch(theme, (newShow) => {
   $q.dark.set(!newShow)
   notify.success('更换主题成功！')
+})
+
+onMounted(() => {
+  automaticLogin()
 })
 
 </script>

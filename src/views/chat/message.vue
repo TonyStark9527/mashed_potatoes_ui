@@ -62,9 +62,6 @@ function selectContact(value: any) {
 api.get('/v1/chat/chat/contacts/' + user.getUsername()).then(res => {
   if (res.data.code === '00000' && res.data.result) {
     contacts.value = res.data.result
-    contacts.value.forEach((contact: any) => {
-      contact.lastContactDateTime = contact.lastContactDateTime.substring(11,16)
-    })
   }
 })
 
