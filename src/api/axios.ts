@@ -10,10 +10,15 @@ const api = axios.create({
 api.interceptors.request.use(
     config => {
         let apiToken = api.defaults.headers.token
+        const user = userStore()
+        let token = user.getToken()
         if (!apiToken) {
-            const user = userStore()
-            let token = user.getToken()
             if (token) {
+                config.headers!.token = token
+                api.defaults.headers.token = token
+            }
+        } else {
+            if (token && apiToken !== token) {
                 config.headers!.token = token
                 api.defaults.headers.token = token
             }
@@ -37,6 +42,12 @@ api.interceptors.response.use(
             error.data = {
                 code: 'A0001',
                 message: '密码错误！'
+            }
+        }
+        if (error.request.responseURL.endsWith('/token/user_info') && error.response.status === 500) {
+            error.data = {
+                code: '',
+                message: 'token过期！'
             }
         }
         return error

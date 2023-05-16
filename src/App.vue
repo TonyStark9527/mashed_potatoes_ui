@@ -130,6 +130,9 @@ function automaticLogin() {
         login.value.isLogin = true
         // 创建websocket
         createWebSocket()
+      } else {
+        // 提示用户登录失败
+        notify.error(userInfo.data.message)
       }
     })
   }
