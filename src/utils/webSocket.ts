@@ -22,6 +22,7 @@ module webSocketUtil {
             return webSocket
         } else {
             NotifyTip.warn('该浏览器不支持WebSocket!')
+            return null
         }
     }
 
