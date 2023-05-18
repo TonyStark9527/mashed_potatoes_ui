@@ -1,11 +1,20 @@
 import {defineStore} from "pinia"
 
+interface UserStore {
+    username: string
+    nickname: string
+    avatar: string
+    token: string
+    websocket: WebSocket | null
+}
+
 export const userStore = defineStore('user', {
-    state: () => ({
+    state: () => (<UserStore>{
         username: '',
         nickname: '',
         avatar: '',
-        token: ''
+        token: '',
+        websocket: null
     }),
     actions: {
         setInfo(username: string, nickname: string, avatar: string) {
@@ -24,6 +33,12 @@ export const userStore = defineStore('user', {
         },
         getAvatar(): string {
             return this.avatar
+        },
+        setWebsocket(websocket: WebSocket) {
+            this.websocket = websocket
+        },
+        getWebsocket(): WebSocket | null {
+            return this.websocket
         }
     }
 })

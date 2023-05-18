@@ -34,7 +34,8 @@
         <component ref="routerViewRef" :is="Component"/>
       </router-view>
     </div>
-    <div style="width: calc(100% - 350px);" class="column full-height q-gutter-none">
+    <q-separator class="column" vertical />
+    <div style="width: calc(100% - 351px);" class="column full-height q-gutter-none">
       <div class="q-pa-xs" style="height: calc(100% - 200px);">
         <q-infinite-scroll class="full-width full-height overflow-auto" @load="onLoad" reverse :offset="0"
                            ref="scrollAreaRef">

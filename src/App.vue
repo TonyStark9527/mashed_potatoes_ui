@@ -108,8 +108,6 @@ const user = userStore()
 
 const $q = useQuasar()
 
-let websocket: WebSocket | null = null
-
 // 登录相关
 const login = ref({
   loginPanel: false, // 是否弹出登录面板
@@ -185,22 +183,21 @@ function logout() {
   login.value.username = ''
   login.value.password = ''
   $q.localStorage.remove('mashed_potatoes_token')
-  // TODO 断开websocket
-  if (websocket) {
-    websocket.close()
+  if (user.getWebsocket()) {
+    user.getWebsocket()?.close()
   }
 }
 
 function createWebSocket() {
-  // TODO 需要暴露出一个方法关闭websocket连接
   // 创建websocket连接
-  websocket = webSocket.create('ws://1.13.23.227:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
+  let websocket = webSocket.create('ws://1.13.23.227:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
     if (['message', 'friend'].includes(<string>route.meta.key)) {
       console.log(messageEvent)
       let message = JSON.parse(messageEvent.data)
       routerViewRef.value.receiveMessage(message)
     }
   })
+  user.setWebsocket(<WebSocket>websocket)
 }
 
 const menu = ref('home')
