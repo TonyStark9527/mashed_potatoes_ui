@@ -96,9 +96,14 @@ import {userStore} from "@/store/userStore"
 import notify from "@/utils/notify"
 import {useRoute} from "vue-router"
 import webSocket from "@/utils/webSocket"
+import {Login} from "@/type/app"
+import {MASHES_POTATOES_TOKEN} from "@/enum/constant"
+import {ResultResponse, UserDTO} from "@/api/response"
 
 // 主题样式
-const theme = ref(true)
+const theme = ref<boolean>(true)
+// 菜单编码
+const menu = ref<string>('home')
 // router-view的ref，用来调用子组件的方法
 const routerViewRef = ref<any>(null)
 // 用来获取当前路由
@@ -109,20 +114,27 @@ const user = userStore()
 const $q = useQuasar()
 
 // 登录相关
-const login = ref({
-  loginPanel: false, // 是否弹出登录面板
-  loginLoading: false, // 调用登录接口时，登录按钮的loading状态
+const login = ref<Login>({
+  loginPanel: false,
+  loginLoading: false,
   hidePassword: true,
-  username: 'tom', // 用户名
-  password: '123456', // 用户密码
-  isLogin: false // 用户菜单显示控制，true为登录菜单，false为未登录菜单
+  username: 'tom',
+  password: '123456',
+  isLogin: false
 })
 
+/**
+ * 自动登录
+ */
 function automaticLogin() {
-  let token = <string>$q.localStorage.getItem('mashed_potatoes_token')
+  // 获取localstorage中的token
+  let token = <string>$q.localStorage.getItem(MASHES_POTATOES_TOKEN)
+  // 如果token存在
   if (token) {
+    // 设置user的token方便调用
     user.setToken(token)
-    api.get('/v1/user/user/token/user_info').then(userInfo => {
+    // 根据token获取用户信息
+    api.get<ResultResponse<UserDTO>>('/v1/user/user/token/user_info').then(userInfo => {
       if (userInfo.data.code === '00000' && userInfo.data.result) {
         // 设置全局用户信息
         user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, userInfo.data.result.avatar)
@@ -131,6 +143,8 @@ function automaticLogin() {
         // 创建websocket
         createWebSocket()
       } else {
+        // 清除localStorage中的token
+        $q.localStorage.remove(MASHES_POTATOES_TOKEN)
         // 提示用户登录失败
         notify.error(userInfo.data.message)
       }
@@ -138,20 +152,24 @@ function automaticLogin() {
   }
 }
 
+/**
+ * 登录
+ */
 function loginIn() {
   if (!login.value.username || !login.value.password) {
     notify.warn('请输入用户名和密码！')
     return
   }
+  // 将登录按钮设置为loading
   login.value.loginLoading = true
-  // todo 用户token的存储与使用
-  api.post('/v1/user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
-    // todo 处理返回参数
+  api.post<ResultResponse<string>>('/v1/user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
+    // 判断登录成功与否
     if (res.data.code === '00000' && res.data.result) {
       // 设置用户token，请求用户信息
       user.setToken(res.data.result)
-      $q.localStorage.set('mashed_potatoes_token', res.data.result)
-      api.get('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
+      // 储存用户token
+      $q.localStorage.set(MASHES_POTATOES_TOKEN, res.data.result)
+      api.get<ResultResponse<UserDTO>>('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
         if (userInfo.data.code === '00000' && userInfo.data.result) {
           // 设置全局用户信息
           user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, userInfo.data.result.avatar)
@@ -176,6 +194,9 @@ function loginIn() {
   })
 }
 
+/**
+ * 注销
+ */
 function logout() {
   // TODO 调用注销接口
   // api.get('').then()
@@ -188,6 +209,9 @@ function logout() {
   }
 }
 
+/**
+ * 创建websocket
+ */
 function createWebSocket() {
   // 创建websocket连接
   let websocket = webSocket.create('ws://1.13.23.227:1124/v1/chat/websocket/' + user.getUsername(), function (messageEvent: any) {
@@ -199,8 +223,6 @@ function createWebSocket() {
   })
   user.setWebsocket(<WebSocket>websocket)
 }
-
-const menu = ref('home')
 
 watch(theme, (newShow) => {
   $q.dark.set(!newShow)

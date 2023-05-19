@@ -39,33 +39,42 @@ import api from "@/api/axios"
 import {userStore} from "@/store/userStore"
 import notify from "@/utils/notify"
 import dateTimeUtil from "@/utils/dateTime"
+import {FriendMessageVO, ResultResponse} from "@/api/response"
 
 const user = userStore()
-let contacts = ref<any>()
+let contacts = ref<FriendMessageVO[]>([])
 
 const emits = defineEmits(['emitChildren'])
 
-function selectContact(value: any) {
+/**
+ * 点击事件
+ * @param value
+ */
+function selectContact(value: FriendMessageVO) {
   const params = {
     functionName: 'selectContact',
     data: value
   }
   emits('emitChildren', params)
   // 将选中的聊天框的未读消息设置为0
-  contacts.value.forEach((contact: any) => {
+  contacts.value.forEach((contact: FriendMessageVO) => {
     if (contact.friendUsername === value.friendUsername) {
       contact.unReadMessageCount = 0
     }
   })
 }
 
-api.get('/v1/chat/chat/contacts/' + user.getUsername()).then(res => {
+api.get<ResultResponse<FriendMessageVO[]>>('/v1/chat/chat/contacts/' + user.getUsername()).then(res => {
   if (res.data.code === '00000' && res.data.result) {
     contacts.value = res.data.result
   }
 })
 
-// TODO 完善这个三个方法 时间点，最后发送人，最后一条消息
+/**
+ * 接收到不是当前聊天框的联系人的消息
+ * @param contactId
+ * @param content
+ */
 function receiveMessageNoCurrent(contactId: number, content: string) {
   notify.info('您有一条未读消息')
   contacts.value.forEach((contact: any) => {
@@ -79,6 +88,11 @@ function receiveMessageNoCurrent(contactId: number, content: string) {
   console.log(contacts.value)
 }
 
+/**
+ * 接收到是当前聊天框的联系人的消息
+ * @param contactId
+ * @param content
+ */
 function receiveMessageCurrent(contactId: number, content: string) {
   contacts.value.forEach((contact: any) => {
     if (contact.contactId === contactId) {
@@ -90,6 +104,11 @@ function receiveMessageCurrent(contactId: number, content: string) {
   console.log(contacts.value)
 }
 
+/**
+ * 发送是当前聊天框的联系人的消息
+ * @param contactId
+ * @param content
+ */
 function sendMessageCurrent(contactId: number, content: string) {
   contacts.value.forEach((contact: any) => {
     if (contact.contactId === contactId) {
@@ -105,7 +124,6 @@ defineExpose({
   sendMessageCurrent,
   receiveMessageCurrent
 })
-// TODO 调用接口获取contacts
 </script>
 
 <style lang="sass">
