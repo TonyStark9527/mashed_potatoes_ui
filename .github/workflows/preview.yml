@@ -21,6 +21,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          BRANCH: preview
+          BRANCH: show
           FOLDER: dist
           CLEAN: true
