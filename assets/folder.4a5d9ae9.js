@@ -1,1 +1,0 @@
-import{au as n,B as s}from"./index.a8e2b611.js";const a=(e,t)=>{const c=e.__vccOpts||e;for(const[o,r]of t)c[o]=r;return c},_={};function f(e,t){return s(),n("div",null,"\u6587\u4EF6")}const u=a(_,[["render",f]]);export{u as default};
