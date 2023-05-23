@@ -1,7 +1,7 @@
 module DateTimeUtil {
 
-    export function now(format: string) {
-        let result = format || 'yyyy-MM-dd hh:mm:ss'
+    export function now(format: string = 'yyyy-MM-dd hh:mm:ss') {
+        let result = format
         let date = new Date()
         let year:string
         let month:string
