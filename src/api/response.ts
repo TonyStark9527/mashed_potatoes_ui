@@ -18,6 +18,11 @@ export type Page<T> = {
     totalPages: number
 }
 
+export type TreeDTO<T, E> = {
+    major: T
+    children: E[]
+}
+
 type pageable = {
     offset: number
     pageNumber: number
@@ -67,4 +72,21 @@ export type MessageVO = {
     content: string
     sendDateTime: string
     sent: boolean
+}
+
+export type FriendVO = {
+    id: number
+    friendUsername: string
+    remark: string
+    clusterId: number
+    contactId: number
+    avatar: string
+    email: string
+}
+
+export type ClusterVO = {
+    id: number
+    clusterName: string
+    opened: boolean
+    onlineProportion: string
 }
