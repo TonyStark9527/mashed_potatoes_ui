@@ -8,7 +8,7 @@
       swipeable
       animated
       navigation
-      class="bg-secondary text-white full-height"
+      class="bg-primary text-white full-height"
   >
     <q-carousel-slide name="style" class="column no-wrap flex-center">
       <q-icon name="style" size="56px" />

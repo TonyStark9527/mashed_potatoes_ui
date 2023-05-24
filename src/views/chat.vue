@@ -1,26 +1,26 @@
 <template>
   <q-drawer show-if-above side="left" behavior="desktop" elevated mini>
     <q-list class="fixed-center full-width">
-      <q-item clickable v-ripple :active="menu === 'message'" class="text-secondary" @click="menu='message'"
+      <q-item clickable v-ripple :active="menu === 'message'" class="text-primary" @click="menu='message'"
               to="/mashed_potatoes_ui/chat/message">
         <q-item-section avatar>
-          <q-btn round icon="o_mark_unread_chat_alt" :class="menu === 'message'? 'bg-secondary text-white':''">
+          <q-btn round icon="o_mark_unread_chat_alt" :class="menu === 'message'? 'bg-primary text-white':''">
             <q-badge floating rounded color="red">2</q-badge>
           </q-btn>
         </q-item-section>
       </q-item>
 
-      <q-item clickable v-ripple :active="menu === 'friend'" class="text-secondary" @click="menu='friend'"
+      <q-item clickable v-ripple :active="menu === 'friend'" class="text-primary" @click="menu='friend'"
               to="/mashed_potatoes_ui/chat/friend">
         <q-item-section avatar>
-          <q-btn round icon="o_people_alt" :class="menu === 'friend'? 'bg-secondary text-white':''">
+          <q-btn round icon="o_people_alt" :class="menu === 'friend'? 'bg-primary text-white':''">
           </q-btn>
         </q-item-section>
       </q-item>
 
-      <q-item clickable v-ripple :active="menu === 'setting'" class="text-secondary" @click="menu='setting'">
+      <q-item clickable v-ripple :active="menu === 'setting'" class="text-primary" @click="menu='setting'">
         <q-item-section avatar>
-          <q-btn round icon="o_notifications_active" :class="menu === 'setting'? 'bg-secondary text-white':''">
+          <q-btn round icon="o_notifications_active" :class="menu === 'setting'? 'bg-primary text-white':''">
             <q-badge floating rounded color="red">2</q-badge>
           </q-btn>
         </q-item-section>
@@ -41,13 +41,13 @@
                            ref="scrollAreaRef">
           <template v-if="haveMoreMessage" v-slot:loading>
             <div class="row justify-center q-my-md">
-              <q-spinner-dots color="secondary" size="40px"/>
+              <q-spinner-dots color="primary" size="40px"/>
             </div>
           </template>
           <q-chat-message v-for="(message, index) in messages" :key="index"
                           :avatar="message.avatar" :text="[message.content]" :stamp="message.sendDateTime"
                           :sent="message.sent"
-                          text-color="white" :bg-color="message.sent ? 'secondary' : 'primary'"/>
+                          text-color="white" :bg-color="message.sent ? 'primary' : 'secondary'"/>
         </q-infinite-scroll>
       </div>
       <div class="q-pa-xs q-gutter-sm" style="height: 200px">
@@ -156,7 +156,7 @@ async function sendMessage() {
       messages.value.push({
         avatar: user.getAvatar(),
         content: toSendMessage.value,
-        sendDateTime: dateTimeUtil.now(''),
+        sendDateTime: dateTimeUtil.now(),
         sent: true
       })
       routerViewRef.value.sendMessageCurrent(currentContact.value.contactId, toSendMessage.value)
@@ -199,7 +199,7 @@ async function showReceiveMessage(message: any) {
   messages.value.push({
     avatar: message.sourceAvatar,
     content: message.content,
-    sendDateTime: dateTimeUtil.now(''),
+    sendDateTime: dateTimeUtil.now(),
     sent: false
   })
   await nextTick()

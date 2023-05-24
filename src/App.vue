@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf">
 
-    <q-header reveal elevated class="bg-secondary text-white q-py-sm">
+    <q-header reveal elevated class="bg-primary text-white q-py-sm">
       <q-toolbar>
         <q-btn flat round dense icon="assignment_ind">
           <q-badge floating color="red">2</q-badge>
@@ -9,7 +9,7 @@
         <q-toolbar-title>
           Mashed_potatoes
         </q-toolbar-title>
-        <q-tabs v-model="menu" inline-label class="bg-secondary">
+        <q-tabs v-model="menu" inline-label class="bg-primary">
           <q-route-tab name="home" icon="home" label="首 页" to="/mashed_potatoes_ui/index"/>
           <q-route-tab name="chat" icon="chat" label="聊 天" to="/mashed_potatoes_ui/chat">
             <q-badge floating rounded color="red">2</q-badge>
@@ -18,8 +18,9 @@
           <q-tab name="notice" icon="notifications_active" label="通 知">
             <q-badge floating rounded color="red">2</q-badge>
           </q-tab>
+          <q-tab name="blog" icon="newspaper" label="博 客"/>
           <!--用户未登录与用户登录时区别-->
-          <q-btn v-if="!login.isLogin" class="no-shadow" color="secondary" icon="person" label="登 录" stretch unelevated
+          <q-btn v-if="!login.isLogin" class="no-shadow" color="primary" icon="person" label="登 录" stretch unelevated
                  @click="login.loginPanel = true"/>
           <q-btn-dropdown v-if="login.isLogin" auto-close stretch flat>
             <template v-slot:label>
@@ -30,7 +31,7 @@
             <q-list>
               <q-item clickable v-close-popup @click="logout">
                 <q-item-section avatar>
-                  <q-avatar icon="logout" color="secondary" text-color="white"/>
+                  <q-avatar icon="logout" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>登出</q-item-label>
@@ -38,7 +39,7 @@
               </q-item>
               <q-item clickable v-close-popup>
                 <q-item-section avatar>
-                  <q-avatar icon="logout" color="secondary" text-color="white"/>
+                  <q-avatar icon="logout" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>登出</q-item-label>
@@ -79,9 +80,9 @@
         </q-form>
       </q-card-section>
 
-      <q-card-actions align="right" class="text-primary">
-        <q-btn unelevated color="secondary" label="取 消" v-close-popup/>
-        <q-btn unelevated color="secondary" label="登 录" :loading="login.loginLoading" @click="loginIn"/>
+      <q-card-actions align="right">
+        <q-btn unelevated color="primary" label="取 消" v-close-popup/>
+        <q-btn unelevated color="primary" label="登 录" :loading="login.loginLoading" @click="loginIn"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
