@@ -9,3 +9,7 @@ export type EditRemark = {
     editRemarkLoading: boolean
     newRemark: string
 }
+
+export type EditCluster = {
+    editPanel: boolean
+}

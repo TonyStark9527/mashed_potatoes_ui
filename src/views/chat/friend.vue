@@ -3,12 +3,12 @@
 
     <q-btn-group class="row text-primary no-shadow" spread stretch square style="height: 60px">
       <q-btn label="添加好友" icon="person_add" @click="addFriend"/>
-      <q-btn label="分组管理" icon="diversity_3"/>
+      <q-btn label="分组管理" icon="diversity_3" @click="editCluster.editPanel = true"/>
     </q-btn-group>
 
     <q-separator/>
 
-    <q-input standout="bg-teal text-white" v-model="text" class="row" label="搜索好友">
+    <q-input standout="bg-primary text-white" v-model="text" class="row" label="搜索好友">
       <template v-slot:prepend>
         <q-icon name="person_search"/>
       </template>
@@ -117,12 +117,13 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="editCluster.editPanel"></q-dialog>
 </template>
 <script setup lang="ts">
 import notify from "@/utils/notify"
 import confirm from "@/utils/confirm"
 import {ref} from "vue"
-import {EditRemark, FriendApply} from "@/type/chat/friend"
+import {EditCluster, EditRemark, FriendApply} from "@/type/chat/friend"
 import api from "@/api/axios"
 import {ClusterVO, FriendVO, ResultResponse, TreeDTO} from "@/api/response"
 
@@ -135,6 +136,10 @@ const friendApply = ref<FriendApply>({
 const emits = defineEmits(['emitChildren'])
 
 let text = ref<string>('')
+
+let editCluster = ref<EditCluster>({
+  editPanel: false
+})
 
 // 编辑备注
 let editRemark = ref<EditRemark>({

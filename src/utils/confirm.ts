@@ -10,7 +10,7 @@ module ConfirmTip {
             title: title,
             message: message,
             ok: {
-                color: 'secondary'
+                color: 'primary'
             },
             cancel: {
                 color: 'negative'
