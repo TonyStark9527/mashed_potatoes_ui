@@ -14,6 +14,8 @@ import router from '@/router/index'
 import store from '@/store'
 import App from './App.vue'
 
+import globalsComponents from '@/components'
+
 const app = createApp(App)
 
 app.use(Quasar, {
@@ -27,5 +29,7 @@ app.use(Quasar, {
 })
 
 app.use(router).use(store)
+
+app.use(globalsComponents)
 
 app.mount('#app')

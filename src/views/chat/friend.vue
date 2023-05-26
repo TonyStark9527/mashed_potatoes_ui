@@ -113,19 +113,92 @@
 
       <q-card-actions align="right">
         <q-btn unelevated color="primary" label="取 消" v-close-popup/>
-        <q-btn unelevated color="primary" label="登 录"/>
+        <q-btn unelevated color="primary" label="保 存"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
-  <q-dialog v-model="editCluster.editPanel"></q-dialog>
+  <q-dialog v-model="editCluster.editPanel">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">编辑分组</div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <draggable
+            :list="state.list"
+            ghost-class="ghost"
+            chosen-class="chosenClass"
+            animation="300"
+            @start="onStart"
+            @end="onEnd"
+        >
+          <template v-slot:item="{ element }">
+            <q-item>
+              <q-item-section avatar top>
+                <q-icon name="account_tree" color="black" size="34px" />
+              </q-item-section>
+
+              <q-item-section top class="col-2 gt-sm">
+                <q-item-label class="q-mt-sm">GitHub</q-item-label>
+              </q-item-section>
+
+              <q-item-section top>
+                <q-item-label lines="1">
+                  <span class="text-weight-medium">[quasarframework/quasar]</span>
+                  <span class="text-grey-8"> - GitHub repository</span>
+                </q-item-label>
+                <q-item-label caption lines="1">
+                  @rstoenescu in #1: > The build system
+                </q-item-label>
+                <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary text-uppercase">
+                  <span class="cursor-pointer">Open in GitHub</span>
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section top side>
+                <div class="text-grey-8 q-gutter-xs">
+                  <q-btn class="gt-xs" size="12px" flat dense round icon="delete" />
+                  <q-btn class="gt-xs" size="12px" flat dense round icon="done" />
+                  <q-btn size="12px" flat dense round icon="more_vert" />
+                </div>
+              </q-item-section>
+            </q-item>
+          </template>
+        </draggable>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn unelevated color="primary" label="取 消" v-close-popup/>
+        <q-btn unelevated color="primary" label="保 存"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import notify from "@/utils/notify"
 import confirm from "@/utils/confirm"
-import {ref} from "vue"
+import {reactive, ref} from "vue"
 import {EditCluster, EditRemark, FriendApply} from "@/type/chat/friend"
 import api from "@/api/axios"
 import {ClusterVO, FriendVO, ResultResponse, TreeDTO} from "@/api/response"
+
+const state = reactive({
+  //需要拖拽的数据，拖拽后数据的顺序也会变化
+  list: [
+    { name: "www.itxst.com", id: 0 },
+    { name: "www.baidu.com", id: 1 },
+    { name: "www.google.com", id: 2 },
+  ],
+});
+
+const onStart = () => {
+  console.log("开始拖拽");
+};
+
+//拖拽结束的事件
+const onEnd = () => {
+  console.log("结束拖拽");
+};
+
+
 
 const friendApply = ref<FriendApply>({
   addPanel: false,
