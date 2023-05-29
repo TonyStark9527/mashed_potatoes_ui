@@ -36,25 +36,27 @@
     </div>
     <q-separator class="column" vertical />
     <div style="width: calc(100% - 351px);" class="column full-height q-gutter-none">
-      <div class="q-pa-xs" style="height: calc(100% - 200px);">
-        <q-infinite-scroll class="full-width full-height overflow-auto" @load="onLoad" reverse :offset="0"
-                           ref="scrollAreaRef">
-          <template v-if="haveMoreMessage" v-slot:loading>
-            <div class="row justify-center q-my-md">
-              <q-spinner-dots color="primary" size="40px"/>
-            </div>
-          </template>
-          <q-chat-message v-for="(message, index) in messages" :key="index"
-                          :avatar="message.avatar" :text="[message.content]" :stamp="message.sendDateTime"
-                          :sent="message.sent"
-                          text-color="white" :bg-color="message.sent ? 'primary' : 'secondary'"/>
-        </q-infinite-scroll>
-      </div>
-      <div class="q-pa-xs q-gutter-sm" style="height: 200px">
-        <q-editor class="full-height" v-model="toSendMessage"
-                  :definitions="{send: {tip: '发送',icon: 'send',label: '发送', handler: sendMessage}}"
-                  :toolbar="[['send']]"/>
-      </div>
+      <q-splitter v-model="splitterModel" :limits="[50, 80]" horizontal class="full-height q-pa-xs">
+        <template v-slot:before>
+          <q-infinite-scroll class="full-width full-height overflow-auto" @load="onLoad" reverse :offset="0"
+                             ref="scrollAreaRef">
+            <template v-if="haveMoreMessage" v-slot:loading>
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px"/>
+              </div>
+            </template>
+            <q-chat-message v-for="(message, index) in messages" :key="index"
+                            :avatar="message.avatar" :text="[message.content]" :stamp="message.sendDateTime"
+                            :sent="message.sent"
+                            text-color="white" :bg-color="message.sent ? 'primary' : 'secondary'"/>
+          </q-infinite-scroll>
+        </template>
+        <template v-slot:after>
+          <q-editor class="full-height overflow-hidden" v-model="toSendMessage"
+                    :definitions="{send: {tip: '发送',icon: 'send',label: '发送', handler: sendMessage}}"
+                    :toolbar="[['send']]"/>
+        </template>
+      </q-splitter>
     </div>
   </q-page>
 </template>
@@ -85,6 +87,8 @@ const firstMoreMessage = ref<boolean>(true)
 
 // 消息需要通过接口获取
 const messages = ref<MessageVO[]>([])
+// 聊天信息与输入框的占比
+let splitterModel = ref<number>(70)
 
 // 接收子组件的调用
 function emitFunction(params: any) {

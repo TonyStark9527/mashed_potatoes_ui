@@ -3,7 +3,7 @@
 
     <q-btn-group class="row text-primary no-shadow" spread stretch square style="height: 60px">
       <q-btn label="添加好友" icon="person_add" @click="addFriend"/>
-      <q-btn label="分组管理" icon="diversity_3" @click="editCluster.editPanel = true"/>
+      <q-btn label="分组管理" icon="diversity_3" @click="openFalse"/>
     </q-btn-group>
 
     <q-separator/>
@@ -20,77 +20,103 @@
 
     <q-scroll-area class="full-width full-height q-pa-xs row">
       <q-list class="rounded-borders full-height">
-        <q-expansion-item
-            v-for="cluster in clusterAndFriendData"
-            :default-opened="cluster.major.opened"
-            expand-separator
-            icon="diversity_2"
-            :label="cluster.major.clusterName"
-            header-class="text-primary"
-        >
-          <q-list bordered style="border-top: 0; border-left: 0; border-right: 0">
-            <template v-if="cluster.children.length > 0" v-for="(friend, index) in cluster.children">
-              <q-item class="q-my-sm">
+        <draggable
+            :list="clusterAndFriendData"
+            handle=".mover"
+            ghost-class="ghost"
+            chosen-class="chosenClass"
+            animation="300"
+            @start="onStart"
+            @end="onEnd"
+            item-key="id">
+          <template v-slot:item="{ element }">
+            <q-expansion-item
+                :default-opened="element.major.opened"
+                expand-separator
+                icon="diversity_2"
+                :label="element.major.clusterName"
+                header-class="text-primary"
+            >
+              <template v-slot:header>
                 <q-item-section avatar>
-                  <q-avatar>
-                    <img :src="friend.avatar" alt="">
-                  </q-avatar>
+                  <q-icon name="diversity_2"/>
                 </q-item-section>
-
                 <q-item-section>
-                  <q-item-label>
-                    <q-input :loading="editRemark.editRemarkLoading" standout="bg-teal text-white" label="请输入好友备注" v-if="friend.friendUsername === editRemark.friendUsername" v-model="editRemark.newRemark">
-                      <template v-slot:append>
-                        <q-icon
-                            v-if="!editRemark.editRemarkLoading"
-                            name="check_circle_outline"
-                            class="cursor-pointer"
-                            @click="submitEditMark"
-                        />
-                        <q-icon
-                            v-if="!editRemark.editRemarkLoading"
-                            name="highlight_off"
-                            class="cursor-pointer"
-                            @click="editRemark.friendUsername = ''"
-                        />
-                      </template>
-                    </q-input>
-                    <span v-else>{{ friend.remark }}</span>
-                  </q-item-label>
-                  <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
+                  {{element.major.clusterName}}
                 </q-item-section>
-
                 <q-item-section side>
-                  <q-btn-dropdown class="friend-tool" size="xs" rounded color="primary">
-                    <template v-slot:label>
-
-                    </template>
-                    <q-list>
-                      <q-item clickable v-close-popup @click="chat(friend)">
-                        <q-item-section>
-                          <q-item-label>聊天</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item clickable v-close-popup @click="remarkEdit(friend)">
-                        <q-item-section>
-                          <q-item-label>修改备注</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item class="text-red" clickable v-close-popup @click="deleteFriend">
-                        <q-item-section>
-                          <q-item-label>删除</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-btn-dropdown>
+                  <div class="row items-center">
+                    <q-icon name="control_camera" color="primary mover" size="24px" />
+<!--                    <q-icon name="star" color="red" size="xs" />-->
+<!--                    <q-icon name="star" color="red" size="xs" />-->
+                  </div>
                 </q-item-section>
-              </q-item>
-              <q-separator v-if="index !== cluster.children.length - 1" inset="item" />
-            </template>
-          </q-list>
-        </q-expansion-item>
+              </template>
+              <q-list bordered style="border-top: 0; border-left: 0; border-right: 0">
+                <template v-if="element.children.length > 0" v-for="(friend, index) in element.children">
+                  <q-item class="q-my-sm">
+                    <q-item-section avatar>
+                      <q-avatar>
+                        <img :src="friend.avatar" alt="">
+                      </q-avatar>
+                    </q-item-section>
+
+                    <q-item-section>
+                      <q-item-label>
+                        <q-input :loading="editRemark.editRemarkLoading" standout="bg-teal text-white" label="请输入好友备注" v-if="friend.friendUsername === editRemark.friendUsername" v-model="editRemark.newRemark">
+                          <template v-slot:append>
+                            <q-icon
+                                v-if="!editRemark.editRemarkLoading"
+                                name="check_circle_outline"
+                                class="cursor-pointer"
+                                @click="submitEditMark"
+                            />
+                            <q-icon
+                                v-if="!editRemark.editRemarkLoading"
+                                name="highlight_off"
+                                class="cursor-pointer"
+                                @click="editRemark.friendUsername = ''"
+                            />
+                          </template>
+                        </q-input>
+                        <span v-else>{{ friend.remark }}</span>
+                      </q-item-label>
+                      <q-item-label caption lines="1">{{ friend.email }}</q-item-label>
+                    </q-item-section>
+
+                    <q-item-section side>
+                      <q-btn-dropdown class="friend-tool" size="xs" rounded color="primary">
+                        <template v-slot:label>
+
+                        </template>
+                        <q-list>
+                          <q-item clickable v-close-popup @click="chat(friend)">
+                            <q-item-section>
+                              <q-item-label>聊天</q-item-label>
+                            </q-item-section>
+                          </q-item>
+
+                          <q-item clickable v-close-popup @click="remarkEdit(friend)">
+                            <q-item-section>
+                              <q-item-label>修改备注</q-item-label>
+                            </q-item-section>
+                          </q-item>
+
+                          <q-item class="text-red" clickable v-close-popup @click="deleteFriend">
+                            <q-item-section>
+                              <q-item-label>删除</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </q-list>
+                      </q-btn-dropdown>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator v-if="index !== element.children.length - 1" inset="item" />
+                </template>
+              </q-list>
+            </q-expansion-item>
+          </template>
+        </draggable>
       </q-list>
     </q-scroll-area>
   </div>
@@ -130,8 +156,9 @@
             animation="300"
             @start="onStart"
             @end="onEnd"
+            item-key="id"
         >
-          <template v-slot:item="{ element }">
+          <template v-slot:item="{ element }" :key="element.major.id">
             <q-item>
               <q-item-section avatar top>
                 <q-icon name="account_tree" color="black" size="34px" />
@@ -195,7 +222,7 @@ const onStart = () => {
 
 //拖拽结束的事件
 const onEnd = () => {
-  console.log("结束拖拽");
+  console.log(clusterAndFriendData);
 };
 
 
@@ -221,7 +248,7 @@ let editRemark = ref<EditRemark>({
   newRemark: ''
 })
 
-let clusterAndFriendData = ref<TreeDTO<ClusterVO, FriendVO>[]>([
+let clusterAndFriendData = reactive<TreeDTO<ClusterVO, FriendVO>[]>([
   {
     major: {
       id: 1,
@@ -249,13 +276,47 @@ let clusterAndFriendData = ref<TreeDTO<ClusterVO, FriendVO>[]>([
         email: 'wwk981124@gmail.com'
       }
     ]
+  },
+  {
+    major: {
+      id: 2,
+      clusterName: '默认分组1',
+      opened: true,
+      onlineProportion: ''
+    },
+    children: []
+  },
+  {
+    major: {
+      id: 3,
+      clusterName: '默认分组2',
+      opened: true,
+      onlineProportion: ''
+    },
+    children: []
+  },
+  {
+    major: {
+      id: 4,
+      clusterName: '默认分组3',
+      opened: true,
+      onlineProportion: ''
+    },
+    children: []
   }
 ])
 
 function initClusterAndFriend() {
   api.get<ResultResponse<TreeDTO<ClusterVO, FriendVO>[]>>('').then(clusterAndFriend => {
-    clusterAndFriendData.value = clusterAndFriend.data.result
+    clusterAndFriendData = clusterAndFriend.data.result
   })
+}
+
+function openFalse() {
+  clusterAndFriendData.forEach(item => {
+    item.major.opened = false
+  })
+  console.log(clusterAndFriendData)
 }
 
 function remarkEdit(friend: FriendVO) {
@@ -303,4 +364,7 @@ function deleteFriend() {
   padding: 0
   width: 24px
   height: 24px
+
+.mover
+  cursor: move
 </style>
