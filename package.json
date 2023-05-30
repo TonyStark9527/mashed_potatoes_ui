@@ -15,6 +15,7 @@
     "pinia": "^2.0.34",
     "quasar": "^2.11.7",
     "sweetalert2": "^11.7.3",
+    "vditor": "^3.9.3",
     "vue": "^3.2.41",
     "vue-router": "^4.1.6",
     "vuedraggable": "^4.1.0"
