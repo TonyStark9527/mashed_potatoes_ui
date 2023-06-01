@@ -90,6 +90,8 @@ const messages = ref<MessageVO[]>([])
 // 聊天信息与输入框的占比
 let splitterModel = ref<number>(70)
 
+const emits = defineEmits(['emitChildren'])
+
 // 接收子组件的调用
 function emitFunction(params: any) {
   let functionName = params.functionName

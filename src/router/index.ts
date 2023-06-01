@@ -41,6 +41,10 @@ const router = createRouter({
         {
             path: '/mashed_potatoes_ui/folder',
             component: () => import('@/views/folder.vue')
+        },
+        {
+            path: '/mashed_potatoes_ui/blog',
+            component: () => import('@/views/blog.vue')
         }
     ]
 })

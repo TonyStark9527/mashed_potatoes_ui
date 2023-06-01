@@ -3,9 +3,7 @@
 
     <q-header reveal elevated class="bg-primary text-white q-py-sm">
       <q-toolbar>
-        <q-btn flat round dense icon="assignment_ind">
-          <q-badge floating color="red">2</q-badge>
-        </q-btn>
+        <q-btn flat round dense icon="catching_pokemon" size="lg"/>
         <q-toolbar-title>
           Mashed_potatoes
         </q-toolbar-title>
@@ -18,7 +16,7 @@
           <q-tab name="notice" icon="notifications_active" label="通 知">
             <q-badge floating rounded color="red">2</q-badge>
           </q-tab>
-          <q-tab name="blog" icon="newspaper" label="博 客"/>
+          <q-route-tab name="blog" icon="newspaper" label="博 客" to="/mashed_potatoes_ui/blog"/>
           <!--用户未登录与用户登录时区别-->
           <q-btn v-if="!login.isLogin" class="no-shadow" color="primary" icon="person" label="登 录" stretch unelevated
                  @click="login.loginPanel = true"/>
@@ -53,7 +51,7 @@
       </q-toolbar>
     </q-header>
     <q-page-container class="fullscreen z-inherit">
-      <router-view v-slot="{ Component, route }">
+      <router-view v-slot="{ Component, route }" @emitChildren="emitFunction">
         <component ref="routerViewRef" :is="Component"/>
       </router-view>
     </q-page-container>
@@ -223,6 +221,11 @@ function createWebSocket() {
     }
   })
   user.setWebsocket(<WebSocket>websocket)
+}
+
+// 接收子组件的调用
+function emitFunction(params: any) {
+  let functionName = params.functionName
 }
 
 watch(theme, (newShow) => {

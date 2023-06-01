@@ -313,8 +313,19 @@ function initClusterAndFriend() {
 }
 
 function openFalse() {
+  // clusterAndFriendData.push({
+  //   major: {
+  //     id: 5,
+  //     clusterName: '默认分组4',
+  //     opened: false,
+  //     onlineProportion: ''
+  //   },
+  //   children: []
+  // })
   clusterAndFriendData.forEach(item => {
-    item.major.opened = false
+    if (item.major.id === 1) {
+      item.major.clusterName = '你说啥'
+    }
   })
   console.log(clusterAndFriendData)
 }
