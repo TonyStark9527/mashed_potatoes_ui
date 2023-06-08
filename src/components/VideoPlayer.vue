@@ -1,16 +1,13 @@
 <template>
-  <div id="mui-player" class="abp">
-    <div slot="castScreen">
-      <svg t="1573891279687" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3272" width="20" height="20"><path d="M853.015273 814.545455h-161.419637a34.909091 34.909091 0 0 1 0-69.818182h161.419637A54.690909 54.690909 0 0 0 907.636364 690.106182V264.075636A54.690909 54.690909 0 0 0 853.015273 209.454545H170.961455A54.667636 54.667636 0 0 0 116.363636 264.075636v426.030546A54.667636 54.667636 0 0 0 170.961455 744.727273h141.358545a34.909091 34.909091 0 0 1 0 69.818182H170.961455A124.555636 124.555636 0 0 1 46.545455 690.106182V264.075636A124.555636 124.555636 0 0 1 170.961455 139.636364h682.053818A124.578909 124.578909 0 0 1 977.454545 264.075636v426.030546A124.578909 124.578909 0 0 1 853.015273 814.545455zM674.909091 907.636364H349.090909l162.909091-209.454546 162.909091 209.454546z" fill="#ffffff" p-id="3273"></path></svg>
-    </div>
-    <div slot="nextMedia">
-      <svg t="1584686776454" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1682" width="22" height="22"><path d="M783.14692466 563.21664097L240.85307534 879.55472126c-39.1656664 24.10194914-90.38230866-6.02548665-90.38230865-51.21664226v-632.676158c0-45.19115433 51.21664097-75.31859011 90.38230865-51.21664226l542.29384932 316.33808029c39.1656664 21.08920518 39.1656664 81.34407804 0 102.43328194z" p-id="1683" fill="#ffffff"></path><path d="M873.52923331 734.94302767c0 42.17841036-39.1656664 78.33133408-90.38230865 78.33133407s-90.38230866-36.15292371-90.38230735-78.33133407V289.05697233c0-42.17841036 39.1656664-78.33133408 90.38230735-78.33133407s90.38230866 36.15292371 90.38230865 78.33133407v445.88605534z" p-id="1684" fill="#ffffff"></path></svg>
-    </div>
+  <div id="mui-player" class="abp" ref="videoPlayer">
+    <div id="comment-stage" class='container' style="z-index: 1 !important;height: 100%;width: 100%;"></div>
   </div>
 </template>
 <script setup>
 import 'mui-player/dist/mui-player.min.css'
 import MuiPlayer from 'mui-player'
+import '@/custom/comment-core-library/dist/css/style.css'
+import CommentManager from '@/custom/comment-core-library/dist/CommentCoreLibrary.js'
 import Hls from 'hls.js'
 import Flv from 'flv.js'
 import {onMounted, ref} from "vue"
@@ -34,11 +31,17 @@ const props = defineProps({
 
 let mp = null
 
+const videoPlayer = ref(null)
+
+const firstPlay = ref(true)
+
 onMounted(() => {
 
   let options = {
     container: '#mui-player',
     title: props.title,
+    // autoplay: true,
+    // muted: true,
     src: props.src,
     width: '100%',
     height: '100%',
@@ -101,5 +104,59 @@ onMounted(() => {
   }
 
   mp = new MuiPlayer(options)
+
+  let CM = new CommentManager(document.getElementById('comment-stage'))
+
+  CM.init(); // 初始化弹幕管理器
+
+
+  let danmakuData = [
+    {"mode":1,"text":"请画出受力分析（10分）","stime":200,"size":25,"dur":7000,"color":0xffffff},
+    {"mode":5,"text":"这风景太漂亮了吧~","stime":1000,"size":25,"dur":4000,"color":0xFF0000},
+    {"mode":5,"text":"前方高能，建议反复观看！！","stime":1500,"size":25,"dur":4000,"color":0xFFFF00},
+  ]
+  CM.load(danmakuData) // 载入弹幕列表，
+
+// 启动播放弹幕（在未启动状态下弹幕不会移动）
+  CM.start()
+
+  let time = 0
+  let timer = null
+
+  setTimeout(() => {
+    videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('play', function (event) {
+      clearInterval(timer)
+      if (timer !== 0) {
+        CM.start()
+      }
+      timer = setInterval(() => {
+        time += 1
+        CM.time(time)
+      }, 1)
+    })
+
+    videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('pause', function (event) {
+      clearInterval(timer)
+      CM.stop()
+    })
+
+    videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('seeking', function (event) {
+      clearInterval(timer)
+    })
+
+    videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('seeked', function (event) {
+      time = this.currentTime
+      clearInterval(timer)
+      CM.clear()
+      CM.time(time)
+      if (timer !== 0) {
+        CM.start()
+      }
+      timer = setInterval(() => {
+        time += 1
+        CM.time(time)
+      }, 1)
+    })
+  }, 500)
 })
 </script>
