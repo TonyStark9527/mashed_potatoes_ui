@@ -29,19 +29,15 @@ const props = defineProps({
   }
 })
 
-let mp = null
+let muiPlayer = ref(null)
 
 const videoPlayer = ref(null)
-
-const firstPlay = ref(true)
 
 onMounted(() => {
 
   let options = {
     container: '#mui-player',
     title: props.title,
-    // autoplay: true,
-    // muted: true,
     src: props.src,
     width: '100%',
     height: '100%',
@@ -103,7 +99,7 @@ onMounted(() => {
     default: break
   }
 
-  mp = new MuiPlayer(options)
+  muiPlayer.value = new MuiPlayer(options)
 
   let CM = new CommentManager(document.getElementById('comment-stage'))
 
@@ -120,42 +116,45 @@ onMounted(() => {
 // 启动播放弹幕（在未启动状态下弹幕不会移动）
   CM.start()
 
+  // 当前视频播放的时间节点
   let time = 0
+  // 计时器
   let timer = null
+  // 记录是否正在播放
+  let isPlay = false
 
   setTimeout(() => {
+    // 视频点击播放按钮监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('play', function (event) {
       clearInterval(timer)
-      if (timer !== 0) {
-        CM.start()
-      }
       timer = setInterval(() => {
         time += 1
         CM.time(time)
       }, 1)
+      CM.start()
     })
-
+    // 视频点击暂停按钮监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('pause', function (event) {
       clearInterval(timer)
       CM.stop()
     })
-
+    // 视频重新定位之前监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('seeking', function (event) {
       clearInterval(timer)
     })
-
+    // 视频重新定位之后监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('seeked', function (event) {
-      time = this.currentTime
       clearInterval(timer)
+      time = this.currentTime
       CM.clear()
+      CM.init()
+      CM.load(danmakuData.filter(item => item.stime > time))
       CM.time(time)
-      if (timer !== 0) {
-        CM.start()
-      }
       timer = setInterval(() => {
         time += 1
         CM.time(time)
       }, 1)
+      CM.start(time)
     })
   }, 500)
 })
