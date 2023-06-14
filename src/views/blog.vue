@@ -1,6 +1,6 @@
 <template>
 <!--  <q-btn label="hshsh" @click="get"></q-btn>-->
-  <div style="height: 50%; width: 50%">
+  <div style="height: 100%; width: 100%">
     <video-player :src="url" :media-source="mediaSource" />
   </div>
 </template>

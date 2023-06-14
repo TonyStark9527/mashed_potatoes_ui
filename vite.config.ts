@@ -26,12 +26,19 @@ export default defineConfig({
     build:{
         rollupOptions: {
             output: {
+                // 处理打包部署之后，文件名无法被识别的问题
                 sanitizeFileName(name: string) {
                     const match = DRIVE_LETTER_REGEX.exec(name)
                     const driveLetter = match ? match[0] : ''
                     return (
                         driveLetter + name.slice(driveLetter.length).replace(INVALID_CHAR_REGEX, '')
                     )
+                },
+                // 处理打包时，块的大小超过限制
+                manualChunks(id: string) {
+                    if (id.includes('node_modules')) {
+                        return id.toString().split('node_modules/')[1].split('/')[0].toString()
+                    }
                 }
             }
         }

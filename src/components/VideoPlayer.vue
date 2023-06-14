@@ -35,6 +35,7 @@ const videoPlayer = ref(null)
 
 onMounted(() => {
 
+  // 视频播放基础配置
   let options = {
     container: '#mui-player',
     title: props.title,
@@ -75,6 +76,7 @@ onMounted(() => {
     }
   }
 
+  // 视频播放方式处理
   switch (props.mediaSource) {
     case 'hls': {
       options.parse = {
@@ -99,21 +101,24 @@ onMounted(() => {
     default: break
   }
 
+  // 初始化视频播放
   muiPlayer.value = new MuiPlayer(options)
 
+  // 获取弹幕div
   let CM = new CommentManager(document.getElementById('comment-stage'))
+  // 初始化弹幕管理器
+  CM.init()
 
-  CM.init(); // 初始化弹幕管理器
-
-
+  // 弹幕列表
+  // TODO 获取方式需要确定
   let danmakuData = [
-    {"mode":1,"text":"请画出受力分析（10分）","stime":200,"size":25,"dur":7000,"color":0xffffff},
-    {"mode":5,"text":"这风景太漂亮了吧~","stime":1000,"size":25,"dur":4000,"color":0xFF0000},
-    {"mode":5,"text":"前方高能，建议反复观看！！","stime":1500,"size":25,"dur":4000,"color":0xFFFF00},
+    {"mode":1,"text":"请画出受力分析（10分）","stime":1000,"size":25,"dur":7000,"color":0xffffff},
+    {"mode":5,"text":"这风景太漂亮了吧~","stime":3000,"size":25,"dur":4000,"color":0xFF0000},
+    {"mode":5,"text":"前方高能，建议反复观看！！","stime":5000,"size":25,"dur":4000,"color":0xFFFF00},
   ]
-  CM.load(danmakuData) // 载入弹幕列表，
-
-// 启动播放弹幕（在未启动状态下弹幕不会移动）
+  // 初始化载入弹幕
+  CM.load(danmakuData)
+  // 启动播放弹幕（在未启动状态下弹幕不会移动）
   CM.start()
 
   // 当前视频播放的时间节点
@@ -123,37 +128,50 @@ onMounted(() => {
   // 记录是否正在播放
   let isPlay = false
 
+  // 监听视频操作事件
   setTimeout(() => {
     // 视频点击播放按钮监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('play', function (event) {
+      // 清除计时器
       clearInterval(timer)
+      // 开始计时器
       timer = setInterval(() => {
-        time += 1
+        time += 100
         CM.time(time)
-      }, 1)
+      }, 100)
+      // 播放弹幕
       CM.start()
     })
     // 视频点击暂停按钮监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('pause', function (event) {
+      // 清除计时器
       clearInterval(timer)
+      // 暂停弹幕
       CM.stop()
     })
     // 视频重新定位之前监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('seeking', function (event) {
+      // 清除计时器
       clearInterval(timer)
     })
     // 视频重新定位之后监听
     videoPlayer.value?.children[1].children[0].children[0]?.addEventListener('seeked', function (event) {
+      // 清空计时器
       clearInterval(timer)
-      time = this.currentTime
+      // 获取定位之后的视频时间戳
+      time = this.currentTime * 1000
+      // 清空弹幕
       CM.clear()
-      CM.init()
+      // 重新载入弹幕列表
       CM.load(danmakuData.filter(item => item.stime > time))
+      // 通报当前时间戳
       CM.time(time)
+      // 开始计时器
       timer = setInterval(() => {
-        time += 1
+        time += 100
         CM.time(time)
-      }, 1)
+      }, 100)
+      // 开始播放弹幕
       CM.start(time)
     })
   }, 500)
