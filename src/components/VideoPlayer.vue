@@ -6,6 +6,7 @@
 <script setup>
 import 'mui-player/dist/mui-player.min.css'
 import MuiPlayer from 'mui-player'
+import MuiPlayerDesktopPlugin from 'mui-player-desktop-plugin'
 import '@/custom/comment-core-library/dist/css/style.css'
 import CommentManager from '@/custom/comment-core-library/dist/CommentCoreLibrary.js'
 import Hls from 'hls.js'
@@ -62,7 +63,7 @@ onMounted(() => {
             console.log('next media button click...');
           },
           style:{}, // 自定义添加控件样式
-        },
+        }
       ],
       headControls:[
         {
@@ -73,7 +74,11 @@ onMounted(() => {
           style:{}, // 自定义添加控件样式
         }
       ]
-    }
+    },
+    plugins: [
+        new MuiPlayerDesktopPlugin({
+        })
+    ]
   }
 
   // 视频播放方式处理
@@ -125,8 +130,6 @@ onMounted(() => {
   let time = 0
   // 计时器
   let timer = null
-  // 记录是否正在播放
-  let isPlay = false
 
   // 监听视频操作事件
   setTimeout(() => {
