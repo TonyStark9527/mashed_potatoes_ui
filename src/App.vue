@@ -58,15 +58,22 @@
   </q-layout>
   <q-dialog v-model="login.loginPanel" persistent>
     <q-card>
-      <q-card-section>
+      <q-card-section class="bg-primary text-white">
         <div class="text-h6">登 录</div>
       </q-card-section>
 
-      <q-card-section class="q-pt-none">
+      <q-card-section>
         <q-form class="q-gutter-md">
-          <q-input standout="bg-primary text-white" label="用户名" v-model="login.username"/>
+          <q-input standout="bg-primary text-white" label="用户名" v-model="login.username">
+            <template v-slot:prepend>
+              <q-icon name="person" />
+            </template>
+          </q-input>
           <q-input standout="bg-primary text-white" :type="login.hidePassword ? 'password' : 'text'" label="密码"
                    v-model="login.password">
+            <template v-slot:prepend>
+              <q-icon name="lock" />
+            </template>
             <template v-slot:append>
               <q-icon
                   :name="login.hidePassword ? 'visibility_off' : 'visibility'"
@@ -77,6 +84,8 @@
           </q-input>
         </q-form>
       </q-card-section>
+
+      <q-separator />
 
       <q-card-actions align="right">
         <q-btn unelevated color="primary" label="取 消" v-close-popup/>
