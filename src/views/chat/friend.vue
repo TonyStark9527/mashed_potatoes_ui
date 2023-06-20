@@ -8,7 +8,7 @@
 
     <q-separator/>
 
-    <q-input standout="bg-primary text-white" v-model="text" class="row" label="搜索好友">
+    <q-input square standout="bg-primary text-white" v-model="text" class="row" label="搜索好友">
       <template v-slot:prepend>
         <q-icon name="person_search"/>
       </template>
@@ -122,24 +122,42 @@
   </div>
   <q-dialog v-model="friendApply.addPanel">
     <q-card>
-      <q-card-section>
+      <q-card-section class="bg-primary text-white">
         <div class="text-h6">添加好友</div>
       </q-card-section>
 
-      <q-card-section class="q-pt-none">
+      <q-card-section>
         <q-form class="q-gutter-md">
-          <q-select standout="bg-teal text-white" :options="['google', 'baidu', 'biying']" label="用户名" v-model="friendApply.targetUsername"/>
-          <q-input
-              v-model="friendApply.comment"
-              filled
-              type="textarea"
-          />
+          <q-input standout="bg-primary text-white" label="搜索用户" v-model="friendApply.searchContent">
+            <template v-slot:prepend>
+              <q-icon name="person_search" />
+            </template>
+            <template v-slot:append>
+              <q-btn flat round dense icon="search"/>
+            </template>
+          </q-input>
+          <q-select table-colspan="2" standout="bg-primary text-white" :options="searchFriend" label="选择用户" v-model="friendApply.targetUsername">
+            <template v-slot:prepend>
+              <q-icon name="how_to_reg" />
+            </template>
+          </q-select>
+          <q-input standout="bg-primary text-white"
+                   v-model="friendApply.comment"
+                   type="textarea"
+                   label="验证信息"
+                   autogrow>
+            <template v-slot:prepend>
+              <q-icon name="maps_ugc" />
+            </template>
+          </q-input>
         </q-form>
       </q-card-section>
 
+      <q-separator />
+
       <q-card-actions align="right">
         <q-btn unelevated color="primary" label="取 消" v-close-popup/>
-        <q-btn unelevated color="primary" label="保 存"/>
+        <q-btn unelevated color="primary" label="发 送"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -229,13 +247,16 @@ const onEnd = () => {
 
 const friendApply = ref<FriendApply>({
   addPanel: false,
+  searchContent: '',
   targetUsername: '',
-  comment: ''
+  comment: '请求添加你为好友'
 })
 
 const emits = defineEmits(['emitChildren'])
 
 let text = ref<string>('')
+
+let searchFriend = ref([{label:'托尼', value:'tony'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}, {label:'汤姆', value: 'tom'}])
 
 let editCluster = ref<EditCluster>({
   editPanel: false
