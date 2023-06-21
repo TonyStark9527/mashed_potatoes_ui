@@ -18,9 +18,10 @@
         </q-item-section>
       </q-item>
 
-      <q-item clickable v-ripple :active="menu === 'setting'" class="text-primary" @click="menu='setting'">
+      <q-item clickable v-ripple :active="menu === 'notice'" class="text-primary" @click="menu='notice'"
+              to="/mashed_potatoes_ui/chat/notice">
         <q-item-section avatar>
-          <q-btn round icon="o_notifications_active" :class="menu === 'setting'? 'bg-primary text-white':''">
+          <q-btn round icon="o_notifications_active" :class="menu === 'notice'? 'bg-primary text-white':''">
             <q-badge floating rounded color="red">2</q-badge>
           </q-btn>
         </q-item-section>

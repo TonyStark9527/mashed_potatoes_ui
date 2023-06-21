@@ -1,5 +1,6 @@
 export type FriendApply = {
     addPanel: boolean
+    searchContent: string
     targetUsername: string
     comment: string
 }

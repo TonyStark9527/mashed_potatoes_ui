@@ -35,6 +35,13 @@ const router = createRouter({
                     meta: {
                         key: 'friend'
                     }
+                },
+                {
+                    path: 'notice',
+                    component: () => import('@/views/chat/notice.vue'),
+                    meta: {
+                        key: 'notice'
+                    }
                 }
             ]
         },
