@@ -39,7 +39,8 @@ import api from "@/api/axios"
 import {userStore} from "@/store/userStore"
 import notify from "@/utils/notify"
 import dateTimeUtil from "@/utils/dateTime"
-import {FriendMessageVO, ResultResponse} from "@/api/response"
+import {ResultResponse} from "@/api/response"
+import {FriendMessageVO} from "@/api/entity";
 
 const user = userStore()
 let contacts = ref<FriendMessageVO[]>([])
@@ -64,7 +65,7 @@ function selectContact(value: FriendMessageVO) {
   })
 }
 
-api.get<ResultResponse<FriendMessageVO[]>>('/v1/chat/chat/contacts/' + user.getUsername()).then(res => {
+api.get<ResultResponse<FriendMessageVO[]>>('chat/chat/contacts').then(res => {
   if (res.data.code === '00000' && res.data.result) {
     contacts.value = res.data.result
   }

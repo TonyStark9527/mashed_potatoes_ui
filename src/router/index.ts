@@ -47,7 +47,20 @@ const router = createRouter({
         },
         {
             path: '/mashed_potatoes_ui/folder',
-            component: () => import('@/views/folder.vue')
+            component: () => import('@/views/folder.vue'),
+            redirect: '/mashed_potatoes_ui/folder/store',
+            meta: {
+                key: 'folder'
+            },
+            children: [
+                {
+                    path: 'store',
+                    component: () => import('@/views/folder/store.vue'),
+                    meta: {
+                        store: 'store'
+                    }
+                }
+            ]
         },
         {
             path: '/mashed_potatoes_ui/blog',

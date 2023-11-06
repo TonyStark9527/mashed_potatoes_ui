@@ -142,7 +142,7 @@ function automaticLogin() {
     // 设置user的token方便调用
     user.setToken(token)
     // 根据token获取用户信息
-    api.get<ResultResponse<UserDTO>>('/v1/user/user/token/user_info').then(userInfo => {
+    api.get<ResultResponse<UserDTO>>('user/user/token/user_info').then(userInfo => {
       if (userInfo.data.code === '00000' && userInfo.data.result) {
         // 设置全局用户信息
         user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, userInfo.data.result.avatar)
@@ -170,14 +170,14 @@ function loginIn() {
   }
   // 将登录按钮设置为loading
   login.value.loginLoading = true
-  api.post<ResultResponse<string>>('/v1/user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
+  api.post<ResultResponse<string>>('user/user/login', {username: login.value.username, password: login.value.password}).then(res => {
     // 判断登录成功与否
     if (res.data.code === '00000' && res.data.result) {
       // 设置用户token，请求用户信息
       user.setToken(res.data.result)
       // 储存用户token
       $q.localStorage.set(MASHES_POTATOES_TOKEN, res.data.result)
-      api.get<ResultResponse<UserDTO>>('/v1/user/user/user_info/' + login.value.username).then(userInfo => {
+      api.get<ResultResponse<UserDTO>>('user/user/user_info/' + login.value.username).then(userInfo => {
         if (userInfo.data.code === '00000' && userInfo.data.result) {
           // 设置全局用户信息
           user.setInfo(userInfo.data.result.username, userInfo.data.result.nickname, userInfo.data.result.avatar)

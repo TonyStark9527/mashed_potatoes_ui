@@ -68,7 +68,8 @@ import notify from "@/utils/notify"
 import api from "@/api/axios"
 import {userStore} from "@/store/userStore"
 import dateTimeUtil from '@/utils/dateTime'
-import {MessageVO, Page, ResultResponse} from "@/api/response"
+import {Page, ResultResponse} from "@/api/response"
+import {MessageVO} from "@/api/entity";
 // 当前菜单
 const menu = ref('message')
 // 当前聊天框中的好友contact
@@ -110,7 +111,7 @@ function selectContact(contact: any) {
   currentContact.value.contactId = contact.contactId
   currentContact.value.friendUsername = contact.friendUsername
   if (contact.unReadMessageCount > 0) {
-    api.put<ResultResponse<boolean>>('/v1/chat/chat/message/' + contact.contactId + '/read/' + contact.friendUsername).then(result => {
+    api.put<ResultResponse<boolean>>('chat/chat/message/' + contact.contactId + '/read/' + contact.friendUsername).then(result => {
       if (result.data.code === '00000' && result.data.result) {
         console.log("消息已读成功")
       } else {
@@ -126,7 +127,7 @@ function selectContact(contact: any) {
  * 初始化消息
  */
 function initMessage() {
-  api.get<ResultResponse<Page<MessageVO>>>('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername()).then(async initialMessages => {
+  api.get<ResultResponse<Page<MessageVO>>>('chat/chat/messages/' + currentContact.value.contactId + '/page').then(async initialMessages => {
     if (initialMessages.data.code === '00000') {
       if (initialMessages.data.result.content.length > 0) {
         let content = initialMessages.data.result.content
@@ -152,7 +153,7 @@ async function sendMessage() {
   }
   // TODO 判断消息是发给用户还是群
   // TODO 完善接口
-  await api.post<ResultResponse<boolean>>('/v1/chat/websocket/send_to_user',
+  await api.post<ResultResponse<boolean>>('chat/websocket/send_to_user',
       {
         sourceUsername: user.getUsername(),
         sourceAvatar: user.getAvatar(),
@@ -185,7 +186,7 @@ async function sendMessage() {
 function receiveMessage(newMessages: any) {
   if (currentContact.value.contactId && currentContact.value.contactId === newMessages.contactId) {
     showReceiveMessage(newMessages)
-    api.put<ResultResponse<boolean>>('/v1/chat/chat/message/' + currentContact.value.contactId + '/read/' + currentContact.value.friendUsername).then(result => {
+    api.put<ResultResponse<boolean>>('chat/chat/message/' + currentContact.value.contactId + '/read/' + currentContact.value.friendUsername).then(result => {
       if (result.data.code === '00000' && result.data.result) {
         console.log("消息已读成功")
       } else {
@@ -251,7 +252,7 @@ function onLoad(index: any, done: any) {
         firstMoreMessage.value = false
       }
     } else {
-      api.get<ResultResponse<Page<MessageVO>>>('/v1/chat/chat/messages/' + currentContact.value.contactId + '/page/' + user.getUsername() + '?page=' + index).then(initialMessages => {
+      api.get<ResultResponse<Page<MessageVO>>>('chat/chat/messages/' + currentContact.value.contactId + '/page?page=' + index).then(initialMessages => {
         if (initialMessages.data.code === '00000') {
           if (initialMessages.data.result.content.length > 0) {
             let content = initialMessages.data.result.content

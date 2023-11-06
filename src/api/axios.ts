@@ -2,7 +2,7 @@ import axios from 'axios'
 import {userStore} from "@/store/userStore"
 
 const api = axios.create({
-    baseURL: 'http://1.13.23.227:2957',
+    baseURL: 'http://1.13.23.227:2957/v1/',
     // baseURL: 'http://127.0.0.1:2957',
     timeout: 10000
 })

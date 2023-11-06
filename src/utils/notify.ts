@@ -6,7 +6,8 @@ module NotifyTip {
         Notify.create({
             type: 'positive',
             position: 'bottom-right',
-            message: message
+            message: message,
+            timeout: 3000,
         })
     }
 
@@ -14,7 +15,8 @@ module NotifyTip {
         Notify.create({
             type: 'negative',
             position: 'bottom-right',
-            message: message
+            message: message,
+            timeout: 3000
         })
     }
 
@@ -22,7 +24,8 @@ module NotifyTip {
         Notify.create({
             type: 'warning',
             position: 'bottom-right',
-            message: message
+            message: message,
+            timeout: 3000
         })
     }
 
@@ -30,7 +33,8 @@ module NotifyTip {
         Notify.create({
             type: 'info',
             position: 'bottom-right',
-            message: message
+            message: message,
+            timeout: 3000
         })
     }
 }
